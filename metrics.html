@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12.0 Performance Metrics | Title Analysis System Documentation</title>
+    <meta name="description" content="Performance metrics and success criteria for the Title Analysis System">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="nav-section">
+            <h3>Overview</h3>
+            <a href="architecture.html" class="nav-item">1.0 Architecture</a>
+            <a href="workflow.html" class="nav-item">2.0 Workflow Layers</a>
+            <a href="passes.html" class="nav-item">3.0 Three-Pass Strategy</a>
+        </div>
+        <div class="nav-section">
+            <h3>Implementation</h3>
+            <a href="dataflow.html" class="nav-item">4.0 Data Flow</a>
+            <a href="steps.html" class="nav-item">5.0 Step Reference</a>
+            <a href="satisfaction.html" class="nav-item">6.0 Satisfaction Algorithm</a>
+        </div>
+        <div class="nav-section">
+            <h3>Optimization</h3>
+            <a href="decisions.html" class="nav-item">7.0 Decision Points</a>
+            <a href="bottlenecks.html" class="nav-item">8.0 Bottlenecks</a>
+            <a href="improvements.html" class="nav-item">9.0 Improvements</a>
+        </div>
+        <div class="nav-section">
+            <h3>Reference</h3>
+            <a href="prompts.html" class="nav-item">10.0 Prompt Strategy</a>
+            <a href="schemas.html" class="nav-item">11.0 Data Schemas</a>
+            <a href="metrics.html" class="nav-item active">12.0 Metrics</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="doc-header">
+            <h1>Title Analysis System Documentation</h1>
+            <p class="subtitle">LangGraph-based AI Pipeline for ALTA Title Commitments</p>
+            <div>
+                <span class="version-badge">v2.0.0</span>
+                <span class="version-badge">Last Updated: October 2024</span>
+                <span class="version-badge">Status: Production</span>
+            </div>
+        </div>
+
+        <div class="section active">
+            <h2>12.0 Performance Metrics</h2>
+
+            <h3>12.1 Current Performance</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Current</th>
+                        <th>Target</th>
+                        <th>Gap</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Overall Accuracy</td>
+                        <td>70%</td>
+                        <td>85%</td>
+                        <td>15%</td>
+                    </tr>
+                    <tr>
+                        <td>False Negatives</td>
+                        <td>45%</td>
+                        <td>10%</td>
+                        <td>35%</td>
+                    </tr>
+                    <tr>
+                        <td>False Positives</td>
+                        <td>25%</td>
+                        <td>5%</td>
+                        <td>20%</td>
+                    </tr>
+                    <tr>
+                        <td>Processing Time (500 docs)</td>
+                        <td>25 min</td>
+                        <td>10 min</td>
+                        <td>15 min</td>
+                    </tr>
+                    <tr>
+                        <td>LLM Calls</td>
+                        <td>500+</td>
+                        <td>200</td>
+                        <td>300+</td>
+                    </tr>
+                    <tr>
+                        <td>Token Usage</td>
+                        <td>2M</td>
+                        <td>800K</td>
+                        <td>1.2M</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>12.2 Error Distribution</h3>
+            <ul>
+                <li><strong>False Negatives (45%):</strong> Missing valid encumbrances</li>
+                <li><strong>Misclassification (30%):</strong> Wrong type/severity assigned</li>
+                <li><strong>False Positives (25%):</strong> Including released items</li>
+            </ul>
+
+            <h3>12.3 Expected Improvements</h3>
+            <p>With all 5 priority improvements implemented:</p>
+            <ul>
+                <li><strong>Accuracy:</strong> 70% → 85-90%</li>
+                <li><strong>Processing Time:</strong> 25 min → 8-10 min</li>
+                <li><strong>LLM Calls:</strong> 500+ → 150-200</li>
+                <li><strong>Cost Reduction:</strong> 60-70%</li>
+                <li><strong>Error Rate:</strong> 30% → 10-15%</li>
+            </ul>
+
+            <h3>12.4 Success Criteria</h3>
+            <div class="alert alert-success">
+                <strong>Target:</strong> Achieve 50% improvement in accuracy and performance within 3 months through systematic implementation of the improvement roadmap.
+            </div>
+        </div>
+    </div>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

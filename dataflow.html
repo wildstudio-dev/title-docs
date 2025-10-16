@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4.0 Data Flow & State Management | Title Analysis System Documentation</title>
+    <meta name="description" content="4.0 Data Flow & State Management - Title Analysis System Documentation">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="nav-section">
+            <h3>Overview</h3>
+            <a href="architecture.html" class="nav-item">1.0 Architecture</a>
+            <a href="workflow.html" class="nav-item">2.0 Workflow Layers</a>
+            <a href="passes.html" class="nav-item">3.0 Three-Pass Strategy</a>
+        </div>
+        <div class="nav-section">
+            <h3>Implementation</h3>
+            <a href="dataflow.html" class="nav-item">4.0 Data Flow</a>
+            <a href="steps.html" class="nav-item">5.0 Step Reference</a>
+            <a href="satisfaction.html" class="nav-item">6.0 Satisfaction Algorithm</a>
+        </div>
+        <div class="nav-section">
+            <h3>Optimization</h3>
+            <a href="decisions.html" class="nav-item">7.0 Decision Points</a>
+            <a href="bottlenecks.html" class="nav-item">8.0 Bottlenecks</a>
+            <a href="improvements.html" class="nav-item">9.0 Improvements</a>
+        </div>
+        <div class="nav-section">
+            <h3>Reference</h3>
+            <a href="prompts.html" class="nav-item">10.0 Prompt Strategy</a>
+            <a href="schemas.html" class="nav-item">11.0 Data Schemas</a>
+            <a href="metrics.html" class="nav-item">12.0 Metrics</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="doc-header">
+            <h1>Title Analysis System Documentation</h1>
+            <p class="subtitle">LangGraph-based AI Pipeline for ALTA Title Commitments</p>
+            <div>
+                <span class="version-badge">v2.0.0</span>
+                <span class="version-badge">Last Updated: October 2024</span>
+                <span class="version-badge">Status: Production</span>
+            </div>
+        </div>
+
+        <div class="section active">
+
+            <h2>4.0 Data Flow & State Management</h2>
+
+            <h3>4.1 AIData Storage Schema</h3>
+            <div class="code-block">
+CREATE TABLE ai_data (
+    id UUID PRIMARY KEY,
+    org_id UUID NOT NULL,
+    order_id UUID NOT NULL,
+    key VARCHAR NOT NULL,
+    value JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(org_id, order_id, key)
+);</div>
+
+            <h3>4.2 Key Patterns by Layer</h3>
+            
+            <div class="key-pattern">Layer 1: title_report:doc:{doc_id}:analysis</div>
+            <div class="key-pattern">Layer 1: title_tax_encumbrances</div>
+            <div class="key-pattern">Layer 2: title_docs_summaries</div>
+            <div class="key-pattern">Layer 2: encumbrance_summaries</div>
+            <div class="key-pattern">Layer 2: encumbrance_classifications</div>
+            <div class="key-pattern">Layer 2: title_encumbrance_releases</div>
+            <div class="key-pattern">Layer 2: chain_of_title</div>
+            <div class="key-pattern">Layer 2: encumbrance_status_analysis</div>
+            <div class="key-pattern">Layer 2: title_docs_confidence_assessment</div>
+            <div class="key-pattern">Layer 2: title_report_confidence_summary</div>
+            <div class="key-pattern">Layer 3: aggregated_title_encumbrances</div>
+            <div class="key-pattern">Layer 5: title_report:master:json</div>
+            <div class="key-pattern">Layer 6: title_report:master:pdf</div>
+            <div class="key-pattern">Metadata: agents:title_analyst:status</div>
+            <div class="key-pattern">Metadata: agents:title_analyst:state</div>
+
+            <h3>4.3 State Merge Strategies</h3>
+            <p>For parallel execution safety, the system uses annotated merge strategies:</p>
+
+            <div class="code-block">
+# Last write wins for workflow status
+status: Annotated[str, (lambda a, b: b if b != "IN_PROGRESS" else a)]
+
+# Dictionary merge for step-level tracking
+step_status: Annotated[Dict[str, str], (lambda a, b: {**(a or {}), **(b or {})})]
+
+# Deep merge for master report metadata
+master_report: Annotated[Dict[str, Any], (lambda a, b: {**(a or {}), **(b or {})})]</div>
+
+            <h3>4.4 Idempotency & Resumability</h3>
+            <div class="code-block">
+async def analyze_and_save_document(self, doc, org_id, order_id):
+    # Check if analysis already exists
+    ai_data = await get_ai_data_instance(
+        org_id, order_id, 
+        generate_doc_analysis_key(doc['id'])
+    )
+    
+    if ai_data is not None:
+        logger.info(f"Skipping doc {doc['id']} - already processed")
+        return {"doc_id": doc['id'], "status": "skipped"}
+    
+    # Proceed with analysis...</div>
+        
+        </div>
+    </div>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7.0 Critical Decision Points | Title Analysis System Documentation</title>
+    <meta name="description" content="7.0 Critical Decision Points - Title Analysis System Documentation">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="nav-section">
+            <h3>Overview</h3>
+            <a href="architecture.html" class="nav-item">1.0 Architecture</a>
+            <a href="workflow.html" class="nav-item">2.0 Workflow Layers</a>
+            <a href="passes.html" class="nav-item">3.0 Three-Pass Strategy</a>
+        </div>
+        <div class="nav-section">
+            <h3>Implementation</h3>
+            <a href="dataflow.html" class="nav-item">4.0 Data Flow</a>
+            <a href="steps.html" class="nav-item">5.0 Step Reference</a>
+            <a href="satisfaction.html" class="nav-item">6.0 Satisfaction Algorithm</a>
+        </div>
+        <div class="nav-section">
+            <h3>Optimization</h3>
+            <a href="decisions.html" class="nav-item">7.0 Decision Points</a>
+            <a href="bottlenecks.html" class="nav-item">8.0 Bottlenecks</a>
+            <a href="improvements.html" class="nav-item">9.0 Improvements</a>
+        </div>
+        <div class="nav-section">
+            <h3>Reference</h3>
+            <a href="prompts.html" class="nav-item">10.0 Prompt Strategy</a>
+            <a href="schemas.html" class="nav-item">11.0 Data Schemas</a>
+            <a href="metrics.html" class="nav-item">12.0 Metrics</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="doc-header">
+            <h1>Title Analysis System Documentation</h1>
+            <p class="subtitle">LangGraph-based AI Pipeline for ALTA Title Commitments</p>
+            <div>
+                <span class="version-badge">v2.0.0</span>
+                <span class="version-badge">Last Updated: October 2024</span>
+                <span class="version-badge">Status: Production</span>
+            </div>
+        </div>
+
+        <div class="section active">
+
+            <h2>7.0 Critical Decision Points</h2>
+
+            <div class="decision-point">
+                <h4>Decision 1: Document Analysis Batch Size</h4>
+                <p><strong>Location:</strong> <span class="inline-code">DocumentAnalyzer.__init__(batch_size=200)</span></p>
+                <p><strong>Current Setting:</strong> 200 documents per batch</p>
+                <p><strong>Trade-off:</strong> Larger batches = faster processing but higher concurrent LLM cost</p>
+                <p><strong>Impact:</strong> With 500 documents, processes in 3 batches (200 + 200 + 100)</p>
+                
+                <div class="improvement-item">
+                    <h4>Optimization Opportunity</h4>
+                    <ul>
+                        <li>Implement adaptive batch sizing based on document complexity</li>
+                        <li>Monitor LLM rate limits and adjust dynamically</li>
+                        <li>Expected improvement: 20-30% faster processing</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="decision-point">
+                <h4>Decision 2: Encumbrance Classification Batch Size</h4>
+                <p><strong>Location:</strong> <span class="inline-code">EncumbranceClassifier.BATCH_SIZE = 50</span></p>
+                <p><strong>Current Setting:</strong> 50 encumbrances per batch</p>
+                <p><strong>Trade-off:</strong> Larger batches risk token limits, smaller batches increase API calls</p>
+                <p><strong>Impact:</strong> With 300 encumbrances, processes in 6 batches</p>
+                
+                <div class="improvement-item">
+                    <h4>Optimization Opportunity</h4>
+                    <ul>
+                        <li>Token-based batching instead of fixed count</li>
+                        <li>Category-aware batching for efficiency</li>
+                        <li>Expected improvement: 40% fewer LLM calls</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="decision-point">
+                <h4>Decision 3: Satisfaction Matching Strictness</h4>
+                <p><strong>Current Logic:</strong></p>
+                <div class="code-block">return (norm1 == norm2) or (norm1 in norm2) or (norm2 in norm1)</div>
+                <p><strong>Trade-off:</strong> Strict matching reduces false positives but increases unmatched satisfactions</p>
+                <p><strong>Example:</strong> "93689" matches "Entry No. 93689:2019" (substring match)</p>
+                
+                <div class="improvement-item">
+                    <h4>Optimization Opportunity</h4>
+                    <ul>
+                        <li>Implement confidence-based matching levels</li>
+                        <li>Train ML model for match probability</li>
+                        <li>Expected improvement: 15% fewer false positives</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="decision-point">
+                <h4>Decision 4: LLM Filtering Discretion</h4>
+                <p><strong>Current Approach:</strong> LLM makes filtering decisions but MUST respect satisfaction map</p>
+                <p><strong>Constraint:</strong></p>
+                <div class="code-block">"**Do NOT mark as released** if:
+   - Encumbrance ID is NOT in released_encumbrances list
+   - Satisfaction is in unmatched_satisfactions"</div>
+                
+                <div class="improvement-item">
+                    <h4>Optimization Opportunity</h4>
+                    <ul>
+                        <li>Two-pass filtering with validation</li>
+                        <li>Audit flagging for low-confidence exclusions</li>
+                        <li>Expected improvement: 25% reduction in errors</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="decision-point">
+                <h4>Decision 5: Severity Score Calculation</h4>
+                <p><strong>Current Approach:</strong> LLM assigns severity with rubric constraints</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Score</th>
+                            <th>Category</th>
+                            <th>Examples</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0-2</td>
+                            <td>Trivial</td>
+                            <td>Administrative, informational</td>
+                        </tr>
+                        <tr>
+                            <td>3-4</td>
+                            <td>Low</td>
+                            <td>Utility easements, old liens (>20y)</td>
+                        </tr>
+                        <tr>
+                            <td>5-6</td>
+                            <td>Medium</td>
+                            <td>Building restrictions, liens $10K-$100K</td>
+                        </tr>
+                        <tr>
+                            <td>7-8</td>
+                            <td>High</td>
+                            <td>Large liens >$100K, major easements</td>
+                        </tr>
+                        <tr>
+                            <td>9-10</td>
+                            <td>Critical</td>
+                            <td>Active foreclosure, IRS liens</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><strong>Type-Specific Floors:</strong></p>
+                <ul>
+                    <li>Active deed of trust: ≥ 5</li>
+                    <li>Unpaid tax liens: ≥ 6</li>
+                    <li>Mechanic's liens: ≥ 7</li>
+                    <li>IRS liens: ≥ 8</li>
+                </ul>
+            </div>
+        
+        </div>
+    </div>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

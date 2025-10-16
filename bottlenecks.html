@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.0 Performance Bottlenecks | Title Analysis System Documentation</title>
+    <meta name="description" content="8.0 Performance Bottlenecks - Title Analysis System Documentation">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="nav-section">
+            <h3>Overview</h3>
+            <a href="architecture.html" class="nav-item">1.0 Architecture</a>
+            <a href="workflow.html" class="nav-item">2.0 Workflow Layers</a>
+            <a href="passes.html" class="nav-item">3.0 Three-Pass Strategy</a>
+        </div>
+        <div class="nav-section">
+            <h3>Implementation</h3>
+            <a href="dataflow.html" class="nav-item">4.0 Data Flow</a>
+            <a href="steps.html" class="nav-item">5.0 Step Reference</a>
+            <a href="satisfaction.html" class="nav-item">6.0 Satisfaction Algorithm</a>
+        </div>
+        <div class="nav-section">
+            <h3>Optimization</h3>
+            <a href="decisions.html" class="nav-item">7.0 Decision Points</a>
+            <a href="bottlenecks.html" class="nav-item">8.0 Bottlenecks</a>
+            <a href="improvements.html" class="nav-item">9.0 Improvements</a>
+        </div>
+        <div class="nav-section">
+            <h3>Reference</h3>
+            <a href="prompts.html" class="nav-item">10.0 Prompt Strategy</a>
+            <a href="schemas.html" class="nav-item">11.0 Data Schemas</a>
+            <a href="metrics.html" class="nav-item">12.0 Metrics</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="doc-header">
+            <h1>Title Analysis System Documentation</h1>
+            <p class="subtitle">LangGraph-based AI Pipeline for ALTA Title Commitments</p>
+            <div>
+                <span class="version-badge">v2.0.0</span>
+                <span class="version-badge">Last Updated: October 2024</span>
+                <span class="version-badge">Status: Production</span>
+            </div>
+        </div>
+
+        <div class="section active">
+
+            <h2>8.0 Performance Bottlenecks</h2>
+
+            <h3>8.1 Bottleneck Analysis</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bottleneck</th>
+                        <th>Current Impact</th>
+                        <th>Root Cause</th>
+                        <th>Proposed Solution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Sequential LLM Calls</strong></td>
+                        <td>500 calls, ~25 minutes</td>
+                        <td>One document per LLM call</td>
+                        <td>Multi-document prompts (5-10 per call)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Large Context Window</strong></td>
+                        <td>100K+ tokens per analysis</td>
+                        <td>Full document text in filtering</td>
+                        <td>Two-stage filtering (deterministic first)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>No Caching</strong></td>
+                        <td>Redundant processing</td>
+                        <td>Every run starts from scratch</td>
+                        <td>Content-based caching by hash</td>
+                    </tr>
+                    <tr>
+                        <td><strong>No Feedback Loop</strong></td>
+                        <td>Errors repeat</td>
+                        <td>No learning from benchmarks</td>
+                        <td>Benchmark-driven prompt tuning</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fixed Batch Sizes</strong></td>
+                        <td>Inefficient resource use</td>
+                        <td>Static configuration</td>
+                        <td>Adaptive batching based on load</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>8.2 Detailed Bottleneck: LLM-Based Filtering</h3>
+            
+            <p><strong>Current Behavior:</strong></p>
+            <ul>
+                <li>Encumbrance status analysis receives all document analyses</li>
+                <li>Plus all classifications and satisfaction map</li>
+                <li>Plus property record metadata</li>
+                <li>Single LLM call with full context</li>
+            </ul>
+
+            <p><strong>Impact:</strong></p>
+            <ul>
+                <li>With 500 documents + 300 encumbrances: ~100K+ tokens</li>
+                <li>Processing time: ~10 seconds per call</li>
+                <li>Risk of exceeding token limits</li>
+                <li>Difficult to debug errors</li>
+            </ul>
+
+            <p><strong>Proposed Solution:</strong></p>
+            <div class="code-block">
+# Stage 1: Deterministic filtering
+released = filter_by_satisfaction_map(encumbrances, resolution_map)
+duplicates = filter_duplicates_by_ref(released)
+out_of_parcel = filter_by_gis_bounds(duplicates, property_bounds)
+
+# Stage 2: LLM for ambiguous cases only
+ambiguous = get_ambiguous_items(out_of_parcel)
+llm_filtered = llm_filter_ambiguous(ambiguous)
+
+# Combine results
+final_encumbrances = deterministic_results + llm_filtered</div>
+        
+        </div>
+    </div>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

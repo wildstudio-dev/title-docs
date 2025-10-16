@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10.0 Prompt Engineering Strategy | Title Analysis System Documentation</title>
+    <meta name="description" content="10.0 Prompt Engineering Strategy - Title Analysis System Documentation">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="nav-section">
+            <h3>Overview</h3>
+            <a href="architecture.html" class="nav-item">1.0 Architecture</a>
+            <a href="workflow.html" class="nav-item">2.0 Workflow Layers</a>
+            <a href="passes.html" class="nav-item">3.0 Three-Pass Strategy</a>
+        </div>
+        <div class="nav-section">
+            <h3>Implementation</h3>
+            <a href="dataflow.html" class="nav-item">4.0 Data Flow</a>
+            <a href="steps.html" class="nav-item">5.0 Step Reference</a>
+            <a href="satisfaction.html" class="nav-item">6.0 Satisfaction Algorithm</a>
+        </div>
+        <div class="nav-section">
+            <h3>Optimization</h3>
+            <a href="decisions.html" class="nav-item">7.0 Decision Points</a>
+            <a href="bottlenecks.html" class="nav-item">8.0 Bottlenecks</a>
+            <a href="improvements.html" class="nav-item">9.0 Improvements</a>
+        </div>
+        <div class="nav-section">
+            <h3>Reference</h3>
+            <a href="prompts.html" class="nav-item">10.0 Prompt Strategy</a>
+            <a href="schemas.html" class="nav-item">11.0 Data Schemas</a>
+            <a href="metrics.html" class="nav-item">12.0 Metrics</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="doc-header">
+            <h1>Title Analysis System Documentation</h1>
+            <p class="subtitle">LangGraph-based AI Pipeline for ALTA Title Commitments</p>
+            <div>
+                <span class="version-badge">v2.0.0</span>
+                <span class="version-badge">Last Updated: October 2024</span>
+                <span class="version-badge">Status: Production</span>
+            </div>
+        </div>
+
+        <div class="section active">
+
+            <h2>10.0 Prompt Engineering Strategy</h2>
+
+            <h3>10.1 Core Principles</h3>
+            <ol>
+                <li><strong>Role Definition:</strong> Every prompt starts with "You are an expert U.S. title officer..."</li>
+                <li><strong>Structured Output:</strong> All prompts enforce Pydantic schema compliance</li>
+                <li><strong>Explicit Constraints:</strong> "MUST", "NEVER", "ONLY" for critical rules</li>
+                <li><strong>Provenance Requirements:</strong> Every finding must have source citation</li>
+                <li><strong>Confidence Scoring:</strong> Rubrics provided for consistent scoring</li>
+            </ol>
+
+            <h3>10.2 Prompt Hierarchy</h3>
+
+            <h4>Level 1: Extraction</h4>
+            <div class="code-block">
+File: alta_title_analyze_document.txt
+
+"This is a **first-pass** extraction: capture every potential encumbrance;
+never suppress or delete items even if the same document purports to release them."
+
+Objective: Maximize recall, minimize false negatives
+Key Enforcement: "When in doubt, include it"</div>
+
+            <h4>Level 2: Classification</h4>
+            <div class="code-block">
+File: alta_title_classify_encumbrances.txt
+
+"You MUST ONLY use encumbrance types and subtypes that are explicitly 
+listed in the schema below. If you cannot find an exact match in the 
+schema, you MUST use 'other' for both type and subtype."
+
+Objective: Add semantic labels without filtering
+Key Enforcement: Schema compliance</div>
+
+            <h4>Level 3: Filtering</h4>
+            <div class="code-block">
+File: alta_title_report_encumbrance_filter.txt
+
+"An encumbrance is **relevant** only if **all of the following are true**:
+1. It is **not** fully released, satisfied, or cured
+2. It is **not** a duplicate
+3. It clearly relates to the **subject property**
+4. It contains legal obligations"
+
+Objective: Determine relevance with strict constraints
+Key Enforcement: Must respect satisfaction_resolution_map</div>
+
+            <h3>10.3 Proposed Enhancement</h3>
+            <div class="alert alert-info">
+                <strong>Validation Loop:</strong> Add self-checking to prompts
+            </div>
+
+            <div class="code-block">
+"# CRITICAL VALIDATION RULES
+
+Before returning your analysis, verify:
+1. Every encumbrance has a non-empty instrument_ref
+2. All severity scores are between 0-10
+3. All confidence scores are between 0.0-1.0
+4. No released encumbrances appear in title_requirements or title_exceptions
+5. Total encumbrances in output equals input count minus satisfactions
+
+If validation fails, retry analysis with corrections."</div>
+        
+        </div>
+    </div>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

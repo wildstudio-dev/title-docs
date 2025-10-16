@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5.0 Complete Step Reference | Title Analysis System Documentation</title>
+    <meta name="description" content="5.0 Complete Step Reference - Title Analysis System Documentation">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="nav-section">
+            <h3>Overview</h3>
+            <a href="architecture.html" class="nav-item">1.0 Architecture</a>
+            <a href="workflow.html" class="nav-item">2.0 Workflow Layers</a>
+            <a href="passes.html" class="nav-item">3.0 Three-Pass Strategy</a>
+        </div>
+        <div class="nav-section">
+            <h3>Implementation</h3>
+            <a href="dataflow.html" class="nav-item">4.0 Data Flow</a>
+            <a href="steps.html" class="nav-item">5.0 Step Reference</a>
+            <a href="satisfaction.html" class="nav-item">6.0 Satisfaction Algorithm</a>
+        </div>
+        <div class="nav-section">
+            <h3>Optimization</h3>
+            <a href="decisions.html" class="nav-item">7.0 Decision Points</a>
+            <a href="bottlenecks.html" class="nav-item">8.0 Bottlenecks</a>
+            <a href="improvements.html" class="nav-item">9.0 Improvements</a>
+        </div>
+        <div class="nav-section">
+            <h3>Reference</h3>
+            <a href="prompts.html" class="nav-item">10.0 Prompt Strategy</a>
+            <a href="schemas.html" class="nav-item">11.0 Data Schemas</a>
+            <a href="metrics.html" class="nav-item">12.0 Metrics</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="doc-header">
+            <h1>Title Analysis System Documentation</h1>
+            <p class="subtitle">LangGraph-based AI Pipeline for ALTA Title Commitments</p>
+            <div>
+                <span class="version-badge">v2.0.0</span>
+                <span class="version-badge">Last Updated: October 2024</span>
+                <span class="version-badge">Status: Production</span>
+            </div>
+        </div>
+
+        <div class="section active">
+
+            <h2>5.0 Complete Step Reference</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Step</th>
+                        <th>Layer</th>
+                        <th>Implementation</th>
+                        <th>Processing</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="inline-code">extract_analyze_docs</span></td>
+                        <td>1</td>
+                        <td>DocumentAnalyzer</td>
+                        <td>LLM (Gemini 2.5 Pro)</td>
+                        <td>Potential encumbrances + satisfactions</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">analyze_tax_history</span></td>
+                        <td>1</td>
+                        <td>TaxEncumbranceAnalyzer</td>
+                        <td>Rule-based (no LLM)</td>
+                        <td>Tax liens and assessments</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">summarize_docs</span></td>
+                        <td>2</td>
+                        <td>DocSummarizer</td>
+                        <td>LLM</td>
+                        <td>Document summaries</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">summarize_encumbrances</span></td>
+                        <td>2</td>
+                        <td>EncumbranceSummarizer</td>
+                        <td>LLM</td>
+                        <td>Encumbrance narratives</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">classify_encumbrances</span></td>
+                        <td>2</td>
+                        <td>EncumbranceClassifier</td>
+                        <td>LLM (batch 50)</td>
+                        <td>Types, subtypes, severity scores</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">resolve_satisfactions</span></td>
+                        <td>2</td>
+                        <td>SatisfactionResolver</td>
+                        <td>Deterministic matching</td>
+                        <td>Release evidence map</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">chain_of_title</span></td>
+                        <td>2</td>
+                        <td>ChainOfTitleAnalyzer</td>
+                        <td>Ownership tracing</td>
+                        <td>Chain completeness score</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">encumbrance_status</span></td>
+                        <td>2</td>
+                        <td>EncumbranceStatusAnalyzer</td>
+                        <td>LLM with constraints</td>
+                        <td>Filtered requirements/exceptions</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">assess_title_docs_confidence</span></td>
+                        <td>2</td>
+                        <td>AssessTitleDocsConfidence</td>
+                        <td>Confidence analysis</td>
+                        <td>Confidence assessment</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">generate_overall_summary</span></td>
+                        <td>2</td>
+                        <td>GenerateOverallSummary</td>
+                        <td>Summary generation</td>
+                        <td>Executive summary</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">aggregate_tax_title</span></td>
+                        <td>3</td>
+                        <td>AggregateTitleEncumbrances</td>
+                        <td>Deduplication</td>
+                        <td>Consolidated encumbrances</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">aggregate_report_data</span></td>
+                        <td>5</td>
+                        <td>AggregateReportData</td>
+                        <td>JSON aggregation</td>
+                        <td>Master JSON in GCS</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">generate_report</span></td>
+                        <td>6</td>
+                        <td>GenerateReport</td>
+                        <td>PDF generation</td>
+                        <td>ALTA commitment PDF</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>5.1 Provenance Requirements</h3>
+            <p>Every encumbrance MUST include traceability information:</p>
+            
+            <div class="schema-def">
+                <div class="schema-field">
+                    <span class="field-name">instrument_ref</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">Entry number or Book/Page from the document</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">recording_date</span>
+                    <span class="field-type">date</span>
+                    <div class="field-desc">Date when instrument was recorded</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">source_snippet</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">Direct verbatim quote containing key legal language</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">source_pages</span>
+                    <span class="field-type">array</span>
+                    <div class="field-desc">Page numbers where evidence appears</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">releases_instrument_ref</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">For satisfactions - specific Entry No. being released</div>
+                </div>
+            </div>
+        
+        </div>
+    </div>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -54,8 +54,34 @@ This documentation provides detailed technical specifications, architecture diag
 ## Getting Started
 
 1. Clone this repository
-2. Open `title-analysis-system-viz.html` in your browser
+2. Open `index.html` in your browser (or any of the individual section pages)
 3. Use the sidebar navigation to explore different sections
+4. Each section is now a separate HTML file for better maintainability
+
+## File Structure
+
+```
+title-docs/
+├── index.html                    # Landing page (redirects to architecture)
+├── architecture.html             # 1.0 System Architecture
+├── workflow.html                 # 2.0 Workflow Layers
+├── passes.html                   # 3.0 Three-Pass Strategy
+├── dataflow.html                 # 4.0 Data Flow & State Management
+├── steps.html                    # 5.0 Complete Step Reference
+├── satisfaction.html             # 6.0 Deterministic Satisfaction Matching
+├── decisions.html                # 7.0 Critical Decision Points
+├── bottlenecks.html              # 8.0 Performance Bottlenecks
+├── improvements.html             # 9.0 AI-First Improvement Roadmap
+├── prompts.html                  # 10.0 Prompt Engineering Strategy
+├── schemas.html                  # 11.0 Data Schemas
+├── metrics.html                  # 12.0 Performance Metrics
+├── assets/
+│   ├── css/
+│   │   └── styles.css           # All CSS styles
+│   └── js/
+│       └── main.js              # Navigation and interaction JavaScript
+└── title-analysis-system-viz.html # Original monolithic file (preserved)
+```
 
 ## Deployment
 

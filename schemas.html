@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11.0 Data Schemas | Title Analysis System Documentation</title>
+    <meta name="description" content="11.0 Data Schemas - Title Analysis System Documentation">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="nav-section">
+            <h3>Overview</h3>
+            <a href="architecture.html" class="nav-item">1.0 Architecture</a>
+            <a href="workflow.html" class="nav-item">2.0 Workflow Layers</a>
+            <a href="passes.html" class="nav-item">3.0 Three-Pass Strategy</a>
+        </div>
+        <div class="nav-section">
+            <h3>Implementation</h3>
+            <a href="dataflow.html" class="nav-item">4.0 Data Flow</a>
+            <a href="steps.html" class="nav-item">5.0 Step Reference</a>
+            <a href="satisfaction.html" class="nav-item">6.0 Satisfaction Algorithm</a>
+        </div>
+        <div class="nav-section">
+            <h3>Optimization</h3>
+            <a href="decisions.html" class="nav-item">7.0 Decision Points</a>
+            <a href="bottlenecks.html" class="nav-item">8.0 Bottlenecks</a>
+            <a href="improvements.html" class="nav-item">9.0 Improvements</a>
+        </div>
+        <div class="nav-section">
+            <h3>Reference</h3>
+            <a href="prompts.html" class="nav-item">10.0 Prompt Strategy</a>
+            <a href="schemas.html" class="nav-item">11.0 Data Schemas</a>
+            <a href="metrics.html" class="nav-item">12.0 Metrics</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="doc-header">
+            <h1>Title Analysis System Documentation</h1>
+            <p class="subtitle">LangGraph-based AI Pipeline for ALTA Title Commitments</p>
+            <div>
+                <span class="version-badge">v2.0.0</span>
+                <span class="version-badge">Last Updated: October 2024</span>
+                <span class="version-badge">Status: Production</span>
+            </div>
+        </div>
+
+        <div class="section active">
+
+            <h2>11.0 Data Schemas</h2>
+
+            <h3>11.1 OneDocSchema (Pass 1 Output)</h3>
+            <div class="schema-def">
+                <div class="schema-field">
+                    <span class="field-name">potential_requirements</span>
+                    <span class="field-type">List[PotentialRequirement]</span>
+                    <div class="field-desc">Schedule B-I items that must be cleared before policy</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">potential_exceptions</span>
+                    <span class="field-type">List[PotentialException]</span>
+                    <div class="field-desc">Schedule B-II items that will remain on title</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">satisfactions</span>
+                    <span class="field-type">List[Satisfaction]</span>
+                    <div class="field-desc">Releases, reconveyances, and satisfaction documents</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">confidence_score</span>
+                    <span class="field-type">float</span>
+                    <div class="field-desc">Overall confidence in extraction (0.0-1.0)</div>
+                </div>
+            </div>
+
+            <h3>11.2 Encumbrance Fields</h3>
+            <div class="schema-def">
+                <div class="schema-field">
+                    <span class="field-name">id</span>
+                    <span class="field-type">UUID</span>
+                    <div class="field-desc">Unique identifier for tracking</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">stable_id</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">Cross-step tracking: "enc-{doc_id}-{index}"</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">instrument_ref</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">Entry number or Book/Page reference</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">recording_date</span>
+                    <span class="field-type">date</span>
+                    <div class="field-desc">Date of recording</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">encumbrance_type</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">Primary classification (lien, easement, etc.)</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">encumbrance_subtype</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">Secondary classification</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">severity_score</span>
+                    <span class="field-type">integer</span>
+                    <div class="field-desc">Impact severity (0-10 scale)</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">source_snippet</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">Verbatim quote from document</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">source_pages</span>
+                    <span class="field-type">List[int]</span>
+                    <div class="field-desc">Page numbers where found</div>
+                </div>
+            </div>
+
+            <h3>11.3 Satisfaction Resolution Map</h3>
+            <div class="code-block">
+{
+  "released_encumbrances": [
+    {
+      "encumbrance_id": "uuid",
+      "satisfaction_id": "uuid",
+      "releases_instrument_ref": "93689:2019",
+      "quote": "First 500 chars of release text...",
+      "recording_date": "2024-01-15",
+      "match_confidence": "high"  // or "medium"
+    }
+  ],
+  "unmatched_satisfactions": [
+    "satisfaction_uuid_1",
+    "satisfaction_uuid_2"
+  ],
+  "temporal_failures": [
+    {
+      "satisfaction_id": "uuid",
+      "encumbrance_id": "uuid",
+      "reason": "Satisfaction 2023-01-01 before encumbrance 2024-01-01"
+    }
+  ]
+}</div>
+        
+        </div>
+    </div>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

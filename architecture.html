@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1.0 Architecture | Title Analysis System Documentation</title>
+    <meta name="description" content="System architecture and technology stack for the Title Analysis System">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="nav-section">
+            <h3>Overview</h3>
+            <a href="architecture.html" class="nav-item active">1.0 Architecture</a>
+            <a href="workflow.html" class="nav-item">2.0 Workflow Layers</a>
+            <a href="passes.html" class="nav-item">3.0 Three-Pass Strategy</a>
+        </div>
+        <div class="nav-section">
+            <h3>Implementation</h3>
+            <a href="dataflow.html" class="nav-item">4.0 Data Flow</a>
+            <a href="steps.html" class="nav-item">5.0 Step Reference</a>
+            <a href="satisfaction.html" class="nav-item">6.0 Satisfaction Algorithm</a>
+        </div>
+        <div class="nav-section">
+            <h3>Optimization</h3>
+            <a href="decisions.html" class="nav-item">7.0 Decision Points</a>
+            <a href="bottlenecks.html" class="nav-item">8.0 Bottlenecks</a>
+            <a href="improvements.html" class="nav-item">9.0 Improvements</a>
+        </div>
+        <div class="nav-section">
+            <h3>Reference</h3>
+            <a href="prompts.html" class="nav-item">10.0 Prompt Strategy</a>
+            <a href="schemas.html" class="nav-item">11.0 Data Schemas</a>
+            <a href="metrics.html" class="nav-item">12.0 Metrics</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="doc-header">
+            <h1>Title Analysis System Documentation</h1>
+            <p class="subtitle">LangGraph-based AI Pipeline for ALTA Title Commitments</p>
+            <div>
+                <span class="version-badge">v2.0.0</span>
+                <span class="version-badge">Last Updated: October 2024</span>
+                <span class="version-badge">Status: Production</span>
+            </div>
+        </div>
+
+        <div class="section active">
+            <h2>1.0 System Architecture</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="number">13</div>
+                    <div class="label">Workflow Steps</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">6</div>
+                    <div class="label">Layers</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">3</div>
+                    <div class="label">Passes</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">200</div>
+                    <div class="label">Batch Size</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">500+</div>
+                    <div class="label">Documents</div>
+                </div>
+            </div>
+
+            <h3>1.1 Technology Stack</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Technology</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Orchestration</strong></td>
+                        <td>LangGraph (StateGraph)</td>
+                        <td>Manages workflow state machine with conditional edges</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LLM Engine</strong></td>
+                        <td>Google Gemini 2.5 Pro</td>
+                        <td>Document analysis and classification via Vertex AI</td>
+                    </tr>
+                    <tr>
+                        <td><strong>State Persistence</strong></td>
+                        <td>PostgreSQL</td>
+                        <td>AIData table with UUID-keyed JSON blobs</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Concurrency</strong></td>
+                        <td>Python asyncio</td>
+                        <td>Parallel document processing within batches</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Schema Validation</strong></td>
+                        <td>Pydantic</td>
+                        <td>Structured output validation and type safety</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Object Storage</strong></td>
+                        <td>Google Cloud Storage</td>
+                        <td>Master JSON and PDF report storage</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>1.2 Core Outputs</h3>
+            
+            <h4>ALTA Title Commitment</h4>
+            <p>Insurable title report containing Schedule B-I (requirements to be cleared) and Schedule B-II (exceptions that will remain). Target accuracy: 85%.</p>
+            
+            <h4>Title Report Master</h4>
+            <p>Comprehensive analysis including ownership chain tracing, encumbrance classification, and detailed reasoning. Completeness target: 90%.</p>
+            
+            <h4>Benchmark Report</h4>
+            <p>Automated comparison against ground truth data to measure accuracy, identify gaps, and track performance metrics. Current coverage: 75%.</p>
+
+            <h3>1.3 State Model</h3>
+            <div class="code-block">
+class TitleAnalystAgentState:
+    status: str              # IN_PROGRESS | COMPLETED | FAILED
+    org_id: str             # Organization UUID
+    order_id: str           # Title Report Request UUID
+    
+    # Merge-safe tracking for parallel execution
+    step_status: Dict[str, str]      # step → PENDING|IN_PROGRESS|COMPLETED|FAILED
+    step_errors: Dict[str, str]      # step → error message
+    step_keys: Dict[str, List[str]]  # step → AIData keys produced
+    
+    # Outputs
+    master_report: Dict[str, Any]    # JSON/PDF storage metadata
+    alta_report: str                 # Final ALTA commitment text</div>
+
+            <h3>1.4 Execution Flow</h3>
+            <div class="flow-diagram">
+                <span class="flow-node">API Request</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-node">State Init</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-node">Graph Invoke</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-node">Node Execution</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-node">State Updates</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-node">AIData Persist</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-node">Final State</span>
+            </div>
+        </div>
+    </div>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3.0 Three-Pass Strategy | Title Analysis System Documentation</title>
+    <meta name="description" content="3.0 Three-Pass Strategy - Title Analysis System Documentation">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="nav-section">
+            <h3>Overview</h3>
+            <a href="architecture.html" class="nav-item">1.0 Architecture</a>
+            <a href="workflow.html" class="nav-item">2.0 Workflow Layers</a>
+            <a href="passes.html" class="nav-item">3.0 Three-Pass Strategy</a>
+        </div>
+        <div class="nav-section">
+            <h3>Implementation</h3>
+            <a href="dataflow.html" class="nav-item">4.0 Data Flow</a>
+            <a href="steps.html" class="nav-item">5.0 Step Reference</a>
+            <a href="satisfaction.html" class="nav-item">6.0 Satisfaction Algorithm</a>
+        </div>
+        <div class="nav-section">
+            <h3>Optimization</h3>
+            <a href="decisions.html" class="nav-item">7.0 Decision Points</a>
+            <a href="bottlenecks.html" class="nav-item">8.0 Bottlenecks</a>
+            <a href="improvements.html" class="nav-item">9.0 Improvements</a>
+        </div>
+        <div class="nav-section">
+            <h3>Reference</h3>
+            <a href="prompts.html" class="nav-item">10.0 Prompt Strategy</a>
+            <a href="schemas.html" class="nav-item">11.0 Data Schemas</a>
+            <a href="metrics.html" class="nav-item">12.0 Metrics</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="doc-header">
+            <h1>Title Analysis System Documentation</h1>
+            <p class="subtitle">LangGraph-based AI Pipeline for ALTA Title Commitments</p>
+            <div>
+                <span class="version-badge">v2.0.0</span>
+                <span class="version-badge">Last Updated: October 2024</span>
+                <span class="version-badge">Status: Production</span>
+            </div>
+        </div>
+
+        <div class="section active">
+
+            <h2>3.0 Three-Pass Analysis Strategy</h2>
+            
+            <div class="alert alert-info">
+                <strong>Core Insight:</strong> The system requires three passes due to critical dependencies: satisfactions depend on encumbrances, classification depends on context, and relevance depends on satisfactions.
+            </div>
+
+            <h3>3.1 Pass 1: Exhaustive Extraction (Layer 1)</h3>
+            
+            <p><strong>Objective:</strong> Extract EVERY potential encumbrance from EVERY document, erring on the side of inclusion.</p>
+            
+            <h4>Key Characteristics</h4>
+            <ul>
+                <li><strong>Maximally inclusive:</strong> "If in doubt, include it"</li>
+                <li><strong>No filtering:</strong> Even if a document releases something in the same text, both are captured</li>
+                <li><strong>Document-level isolation:</strong> Each document analyzed independently</li>
+                <li><strong>Concurrent execution:</strong> Up to 200 documents processed in parallel batches</li>
+            </ul>
+
+            <h4>Prompt Strategy</h4>
+            <div class="code-block">
+"You are an expert U.S. title officer AI. Your job is to read **one** title-related document..."
+"This is a **first-pass** extraction: capture every potential encumbrance;
+never suppress or delete items even if the same document purports to release them."</div>
+
+            <h4>Example Processing</h4>
+            <div class="code-block">
+Document: "Subject to Deed of Trust recorded as Entry 93689:2019 for $291,000. 
+          Said Deed of Trust is hereby reconveyed."
+
+Output:
+  potential_requirements: [
+    {trigger: "Deed of Trust", instrument_ref: "93689:2019", amount: 291000, ...}
+  ]
+  satisfactions: [
+    {trigger: "Reconveyance", releases_instrument_ref: "93689:2019", ...}
+  ]
+
+Note: Both requirement AND satisfaction captured, not merged!</div>
+
+            <h3>3.2 Pass 2: Classification & Matching (Layer 2)</h3>
+            
+            <p><strong>Objective:</strong> Add semantic understanding, match satisfactions to encumbrances, assess data quality.</p>
+
+            <h4>Classification Process (LLM)</h4>
+            <ul>
+                <li>Assign <span class="inline-code">encumbrance_type</span> and <span class="inline-code">encumbrance_subtype</span></li>
+                <li>Calculate <span class="inline-code">severity_score</span> (0-10 scale)</li>
+                <li>Apply type-specific floors (e.g., IRS liens ≥ 8)</li>
+                <li>Temporal adjustments (items > 20 years: -2 severity)</li>
+            </ul>
+
+            <h4>Satisfaction Matching (Deterministic)</h4>
+            <div class="code-block">
+def _instrument_refs_match(self, ref1, ref2):
+    """Deterministic matching using instrument references"""
+    # Normalize: "Book 3285, Page 383" → "3285:383"
+    # Normalize: "Entry No. 93689:2019" → "93689:2019"
+    norm1 = normalize(ref1)
+    norm2 = normalize(ref2)
+    return norm1 == norm2 or norm1 in norm2 or norm2 in norm1
+
+# Temporal validation: satisfaction_date must be > encumbrance_date
+if sat_date < enc_date:
+    mark_as_temporal_failure()
+else:
+    mark_as_released()</div>
+
+            <h3>3.3 Pass 3: Relevance Filtering (Encumbrance Status)</h3>
+            
+            <p><strong>Objective:</strong> Determine which encumbrances are actually relevant to the title report.</p>
+
+            <div class="alert alert-warning">
+                <strong>Critical Constraint:</strong> The LLM MUST respect the deterministic satisfaction resolution map and cannot override high-confidence matches.
+            </div>
+
+            <h4>Relevance Criteria</h4>
+            <p>An encumbrance is relevant only if ALL of the following are true:</p>
+            <ol>
+                <li>It is NOT fully released, satisfied, or cured in a later document</li>
+                <li>It is NOT a duplicate or near-duplicate of another retained item</li>
+                <li>It clearly relates to the subject property (matching parcel ID, plat, or legal description)</li>
+                <li>It contains legal obligations or property rights that would impact the title</li>
+            </ol>
+
+            <h4>LLM Filtering Value-Add</h4>
+            <ul>
+                <li><strong>Deduplication:</strong> Recognizes "same lien described differently"</li>
+                <li><strong>Property matching:</strong> Interprets legal descriptions</li>
+                <li><strong>Grouping:</strong> Collapses related items (e.g., partial releases)</li>
+                <li><strong>Semantic understanding:</strong> Identifies neighboring parcel easements</li>
+            </ul>
+        
+        </div>
+    </div>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

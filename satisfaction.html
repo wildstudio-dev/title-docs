@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6.0 Deterministic Satisfaction Matching Algorithm | Title Analysis System Documentation</title>
+    <meta name="description" content="6.0 Deterministic Satisfaction Matching Algorithm - Title Analysis System Documentation">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="nav-section">
+            <h3>Overview</h3>
+            <a href="architecture.html" class="nav-item">1.0 Architecture</a>
+            <a href="workflow.html" class="nav-item">2.0 Workflow Layers</a>
+            <a href="passes.html" class="nav-item">3.0 Three-Pass Strategy</a>
+        </div>
+        <div class="nav-section">
+            <h3>Implementation</h3>
+            <a href="dataflow.html" class="nav-item">4.0 Data Flow</a>
+            <a href="steps.html" class="nav-item">5.0 Step Reference</a>
+            <a href="satisfaction.html" class="nav-item">6.0 Satisfaction Algorithm</a>
+        </div>
+        <div class="nav-section">
+            <h3>Optimization</h3>
+            <a href="decisions.html" class="nav-item">7.0 Decision Points</a>
+            <a href="bottlenecks.html" class="nav-item">8.0 Bottlenecks</a>
+            <a href="improvements.html" class="nav-item">9.0 Improvements</a>
+        </div>
+        <div class="nav-section">
+            <h3>Reference</h3>
+            <a href="prompts.html" class="nav-item">10.0 Prompt Strategy</a>
+            <a href="schemas.html" class="nav-item">11.0 Data Schemas</a>
+            <a href="metrics.html" class="nav-item">12.0 Metrics</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="doc-header">
+            <h1>Title Analysis System Documentation</h1>
+            <p class="subtitle">LangGraph-based AI Pipeline for ALTA Title Commitments</p>
+            <div>
+                <span class="version-badge">v2.0.0</span>
+                <span class="version-badge">Last Updated: October 2024</span>
+                <span class="version-badge">Status: Production</span>
+            </div>
+        </div>
+
+        <div class="section active">
+
+            <h2>6.0 Deterministic Satisfaction Matching Algorithm</h2>
+
+            <div class="alert alert-success">
+                <strong>Key Innovation:</strong> Satisfaction matching is purely deterministic to prevent LLM hallucination in critical release decisions.
+            </div>
+
+            <h3>6.1 Complete Algorithm</h3>
+            <div class="code-block">
+class SatisfactionResolver:
+    def _normalize_instrument_ref(self, ref):
+        """Normalize to handle format variations"""
+        if not ref:
+            return None
+        
+        ref = ref.strip().replace("Entry No. ", "").replace("Instrument No. ", "")
+        
+        # "Book 3285, Page 383" → "3285:383"
+        if "Book" in ref and "Page" in ref:
+            book = extract_book_number(ref)
+            page = extract_page_number(ref)
+            return f"{book}:{page}"
+        
+        # "78094 in Book 3285" → "78094"
+        if " in Book" in ref:
+            return ref.split(" in Book")[0].strip()
+        
+        return ref
+    
+    def _instrument_refs_match(self, ref1, ref2):
+        """Check if two instrument references match"""
+        norm1 = self._normalize_instrument_ref(ref1)
+        norm2 = self._normalize_instrument_ref(ref2)
+        
+        # Direct match or partial match (substring)
+        return (norm1 == norm2) or (norm1 in norm2) or (norm2 in norm1)
+    
+    async def resolve_satisfactions(self, org_id, order_id):
+        # Get all satisfactions and encumbrances from AIData
+        all_satisfactions = extract_all_satisfactions_from_docs()
+        all_encumbrances = extract_all_encumbrances_from_docs()
+        
+        released_encumbrances = []
+        temporal_failures = []
+        
+        for satisfaction in all_satisfactions:
+            releases_ref = satisfaction['releases_instrument_ref']
+            sat_date = parse_date(satisfaction['recording_date'])
+            
+            for encumbrance in all_encumbrances:
+                enc_ref = encumbrance['instrument_ref']
+                enc_date = parse_date(encumbrance['recording_date'])
+                
+                if not self._instrument_refs_match(releases_ref, enc_ref):
+                    continue  # No match
+                
+                # Temporal validation: satisfaction must be recorded AFTER encumbrance
+                if sat_date and enc_date and sat_date < enc_date:
+                    temporal_failures.append({
+                        "satisfaction_id": satisfaction['id'],
+                        "encumbrance_id": encumbrance['id'],
+                        "reason": f"Satisfaction {sat_date} before encumbrance {enc_date}"
+                    })
+                    continue  # Invalid match
+                
+                # Valid match found
+                match_confidence = "high" if releases_ref == enc_ref else "medium"
+                released_encumbrances.append({
+                    "encumbrance_id": encumbrance['id'],
+                    "satisfaction_id": satisfaction['id'],
+                    "releases_instrument_ref": releases_ref,
+                    "quote": satisfaction['source_snippet'][:500],
+                    "recording_date": satisfaction['recording_date'],
+                    "match_confidence": match_confidence
+                })
+        
+        # Save deterministic resolution map to AIData
+        await save_ai_data(org_id, order_id, SATISFACTION_RESOLUTION_MAP_KEY, {
+            "released_encumbrances": released_encumbrances,
+            "unmatched_satisfactions": [s['id'] for s in all_satisfactions if not matched],
+            "temporal_failures": temporal_failures
+        })</div>
+
+            <h3>6.2 Matching Process Steps</h3>
+            
+            <h4>Step 1: Normalize References</h4>
+            <ul>
+                <li>"Book 3285, Page 383" → "3285:383"</li>
+                <li>"Entry No. 93689:2019" → "93689:2019"</li>
+                <li>"78094 in Book 3285" → "78094"</li>
+            </ul>
+
+            <h4>Step 2: Check for Match</h4>
+            <ul>
+                <li>Exact match → <span class="inline-code">confidence: "high"</span></li>
+                <li>Substring match → <span class="inline-code">confidence: "medium"</span></li>
+                <li>No match → continue to next encumbrance</li>
+            </ul>
+
+            <h4>Step 3: Temporal Validation</h4>
+            <ul>
+                <li>Valid (sat_date > enc_date) → create release mapping</li>
+                <li>Invalid → add to <span class="inline-code">temporal_failures</span></li>
+                <li>Missing dates → proceed with caution flag</li>
+            </ul>
+
+            <h4>Step 4: Output Generation</h4>
+            <div class="code-block">
+{
+  "released_encumbrances": [
+    {
+      "encumbrance_id": "uuid",
+      "satisfaction_id": "uuid",
+      "releases_instrument_ref": "93689:2019",
+      "match_confidence": "high|medium"
+    }
+  ],
+  "unmatched_satisfactions": ["uuid1", "uuid2"],
+  "temporal_failures": [...]
+}</div>
+        
+        </div>
+    </div>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
