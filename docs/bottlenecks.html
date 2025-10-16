@@ -58,7 +58,6 @@
                         <th>Bottleneck</th>
                         <th>Current Impact</th>
                         <th>Root Cause</th>
-                        <th>Proposed Solution</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,31 +65,26 @@
                         <td><strong>Sequential LLM Calls</strong></td>
                         <td>500 calls, ~25 minutes</td>
                         <td>One document per LLM call</td>
-                        <td>Multi-document prompts (5-10 per call)</td>
                     </tr>
                     <tr>
                         <td><strong>Large Context Window</strong></td>
                         <td>100K+ tokens per analysis</td>
                         <td>Full document text in filtering</td>
-                        <td>Two-stage filtering (deterministic first)</td>
                     </tr>
                     <tr>
                         <td><strong>No Caching</strong></td>
                         <td>Redundant processing</td>
                         <td>Every run starts from scratch</td>
-                        <td>Content-based caching by hash</td>
                     </tr>
                     <tr>
                         <td><strong>No Feedback Loop</strong></td>
                         <td>Errors repeat</td>
                         <td>No learning from benchmarks</td>
-                        <td>Benchmark-driven prompt tuning</td>
                     </tr>
                     <tr>
                         <td><strong>Fixed Batch Sizes</strong></td>
                         <td>Inefficient resource use</td>
                         <td>Static configuration</td>
-                        <td>Adaptive batching based on load</td>
                     </tr>
                 </tbody>
             </table>
@@ -113,19 +107,6 @@
                 <li>Difficult to debug errors</li>
             </ul>
 
-            <p><strong>Proposed Solution:</strong></p>
-            <div class="code-block">
-# Stage 1: Deterministic filtering
-released = filter_by_satisfaction_map(encumbrances, resolution_map)
-duplicates = filter_duplicates_by_ref(released)
-out_of_parcel = filter_by_gis_bounds(duplicates, property_bounds)
-
-# Stage 2: LLM for ambiguous cases only
-ambiguous = get_ambiguous_items(out_of_parcel)
-llm_filtered = llm_filter_ambiguous(ambiguous)
-
-# Combine results
-final_encumbrances = deterministic_results + llm_filtered</div>
         
         </div>
     </div>
