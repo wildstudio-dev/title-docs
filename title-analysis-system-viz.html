@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title Analysis System | Technical Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #ffffff;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: #f7f7f7;
+            border-right: 1px solid #e1e1e1;
+            overflow-y: auto;
+            padding: 24px 0;
+        }
+
+        .sidebar h3 {
+            padding: 0 24px;
+            margin-bottom: 16px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 8px 24px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.15s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background: #ebebeb;
+            color: #000;
+        }
+
+        .nav-item.active {
+            background: #e3e3e3;
+            color: #000;
+            font-weight: 500;
+            border-left: 3px solid #0066cc;
+            padding-left: 21px;
+        }
+
+        .nav-section {
+            margin-bottom: 32px;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 32px 48px;
+            max-width: 1400px;
+        }
+
+        .doc-header {
+            margin-bottom: 48px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e1e1e1;
+        }
+
+        .doc-header h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #000;
+        }
+
+        .doc-header .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            margin-right: 12px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 40px 0 24px 0;
+            color: #000;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 32px 0 16px 0;
+            color: #000;
+        }
+
+        h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 24px 0 12px 0;
+            color: #333;
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: #333;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin: 32px 0;
+        }
+
+        .stat-box {
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box .number {
+            font-size: 28px;
+            font-weight: 600;
+            color: #0066cc;
+            margin-bottom: 4px;
+        }
+
+        .stat-box .label {
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 24px 0;
+            line-height: 1.6;
+        }
+
+        .inline-code {
+            background: #f3f3f3;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            color: #d73a49;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f8f8f8;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #e1e1e1;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #e1e1e1;
+            vertical-align: top;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        .layer-section {
+            background: #f8f8f8;
+            border-left: 4px solid #0066cc;
+            padding: 24px;
+            margin: 32px 0;
+            border-radius: 4px;
+        }
+
+        .layer-section h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+
+        .step-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .step-card {
+            background: white;
+            border: 1px solid #e1e1e1;
+            padding: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .step-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+
+        .step-card h4 {
+            font-size: 14px;
+            margin: 0 0 8px 0;
+            color: #000;
+        }
+
+        .step-card p {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+        }
+
+        .step-details {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e1e1e1;
+            display: none;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .step-card.expanded .step-details {
+            display: block;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 6px;
+            margin: 24px 0;
+        }
+
+        .alert-warning {
+            background: #fff8e1;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            color: #0c5460;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            color: #1b5e20;
+        }
+
+        .flow-diagram {
+            background: #fafafa;
+            border: 1px solid #e1e1e1;
+            padding: 24px;
+            border-radius: 6px;
+            margin: 24px 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .flow-node {
+            display: inline-block;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .flow-arrow {
+            display: inline-block;
+            margin: 0 8px;
+            color: #999;
+        }
+
+        .improvement-item {
+            background: white;
+            border: 1px solid #e1e1e1;
+            padding: 20px;
+            margin: 16px 0;
+            border-radius: 6px;
+        }
+
+        .improvement-item h4 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .priority-tag {
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-high {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .priority-medium {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .priority-low {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .impact-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
+        .decision-point {
+            background: #fffbf0;
+            border: 1px solid #ffeaa7;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 24px 0;
+        }
+
+        .decision-point h4 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .key-pattern {
+            font-family: 'Monaco', 'Menlo', monospace;
+            background: #f8f8f8;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+            font-size: 13px;
+            border-left: 3px solid #0066cc;
+        }
+
+        ul, ol {
+            margin: 16px 0 16px 24px;
+            color: #333;
+            font-size: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.7;
+        }
+
+        .schema-def {
+            background: #f8f8f8;
+            padding: 16px;
+            border-radius: 6px;
+            margin: 16px 0;
+        }
+
+        .schema-field {
+            padding: 8px 0;
+            border-bottom: 1px solid #e1e1e1;
+        }
+
+        .schema-field:last-child {
+            border-bottom: none;
+        }
+
+        .field-name {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-weight: 600;
+            color: #0066cc;
+            font-size: 13px;
+        }
+
+        .field-type {
+            color: #666;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
+        .field-desc {
+            color: #555;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="nav-section">
+            <h3>Overview</h3>
+            <button class="nav-item active" onclick="showSection('architecture')">1.0 Architecture</button>
+            <button class="nav-item" onclick="showSection('workflow')">2.0 Workflow Layers</button>
+            <button class="nav-item" onclick="showSection('passes')">3.0 Three-Pass Strategy</button>
+        </div>
+        <div class="nav-section">
+            <h3>Implementation</h3>
+            <button class="nav-item" onclick="showSection('dataflow')">4.0 Data Flow</button>
+            <button class="nav-item" onclick="showSection('steps')">5.0 Step Reference</button>
+            <button class="nav-item" onclick="showSection('satisfaction')">6.0 Satisfaction Algorithm</button>
+        </div>
+        <div class="nav-section">
+            <h3>Optimization</h3>
+            <button class="nav-item" onclick="showSection('decisions')">7.0 Decision Points</button>
+            <button class="nav-item" onclick="showSection('bottlenecks')">8.0 Bottlenecks</button>
+            <button class="nav-item" onclick="showSection('improvements')">9.0 Improvements</button>
+        </div>
+        <div class="nav-section">
+            <h3>Reference</h3>
+            <button class="nav-item" onclick="showSection('prompts')">10.0 Prompt Strategy</button>
+            <button class="nav-item" onclick="showSection('schemas')">11.0 Data Schemas</button>
+            <button class="nav-item" onclick="showSection('metrics')">12.0 Metrics</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="doc-header">
+            <h1>Title Analysis System Documentation</h1>
+            <p class="subtitle">LangGraph-based AI Pipeline for ALTA Title Commitments</p>
+            <div>
+                <span class="version-badge">v2.0.0</span>
+                <span class="version-badge">Last Updated: October 2024</span>
+                <span class="version-badge">Status: Production</span>
+            </div>
+        </div>
+
+        <!-- 1.0 Architecture -->
+        <div id="architecture" class="section active">
+            <h2>1.0 System Architecture</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="number">13</div>
+                    <div class="label">Workflow Steps</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">6</div>
+                    <div class="label">Layers</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">3</div>
+                    <div class="label">Passes</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">200</div>
+                    <div class="label">Batch Size</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">500+</div>
+                    <div class="label">Documents</div>
+                </div>
+            </div>
+
+            <h3>1.1 Technology Stack</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Technology</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Orchestration</strong></td>
+                        <td>LangGraph (StateGraph)</td>
+                        <td>Manages workflow state machine with conditional edges</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LLM Engine</strong></td>
+                        <td>Google Gemini 2.5 Pro</td>
+                        <td>Document analysis and classification via Vertex AI</td>
+                    </tr>
+                    <tr>
+                        <td><strong>State Persistence</strong></td>
+                        <td>PostgreSQL</td>
+                        <td>AIData table with UUID-keyed JSON blobs</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Concurrency</strong></td>
+                        <td>Python asyncio</td>
+                        <td>Parallel document processing within batches</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Schema Validation</strong></td>
+                        <td>Pydantic</td>
+                        <td>Structured output validation and type safety</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Object Storage</strong></td>
+                        <td>Google Cloud Storage</td>
+                        <td>Master JSON and PDF report storage</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>1.2 Core Outputs</h3>
+            
+            <h4>ALTA Title Commitment</h4>
+            <p>Insurable title report containing Schedule B-I (requirements to be cleared) and Schedule B-II (exceptions that will remain). Target accuracy: 85%.</p>
+            
+            <h4>Title Report Master</h4>
+            <p>Comprehensive analysis including ownership chain tracing, encumbrance classification, and detailed reasoning. Completeness target: 90%.</p>
+            
+            <h4>Benchmark Report</h4>
+            <p>Automated comparison against ground truth data to measure accuracy, identify gaps, and track performance metrics. Current coverage: 75%.</p>
+
+            <h3>1.3 State Model</h3>
+            <div class="code-block">
+class TitleAnalystAgentState:
+    status: str              # IN_PROGRESS | COMPLETED | FAILED
+    org_id: str             # Organization UUID
+    order_id: str           # Title Report Request UUID
+    
+    # Merge-safe tracking for parallel execution
+    step_status: Dict[str, str]      # step → PENDING|IN_PROGRESS|COMPLETED|FAILED
+    step_errors: Dict[str, str]      # step → error message
+    step_keys: Dict[str, List[str]]  # step → AIData keys produced
+    
+    # Outputs
+    master_report: Dict[str, Any]    # JSON/PDF storage metadata
+    alta_report: str                 # Final ALTA commitment text</div>
+
+            <h3>1.4 Execution Flow</h3>
+            <div class="flow-diagram">
+                <span class="flow-node">API Request</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-node">State Init</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-node">Graph Invoke</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-node">Node Execution</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-node">State Updates</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-node">AIData Persist</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-node">Final State</span>
+            </div>
+        </div>
+
+        <!-- 2.0 Workflow Layers -->
+        <div id="workflow" class="section">
+            <h2>2.0 Workflow Layers</h2>
+            
+            <p>The system processes documents through 6 distinct layers, with Layer 4 reserved for future enhancements. Each layer contains specific processing steps that may execute in parallel where dependencies allow.</p>
+
+            <div class="layer-section">
+                <h3>Layer 1: Raw Extraction (Parallel)</h3>
+                <p>Initial document analysis with maximally inclusive extraction strategy.</p>
+                
+                <div class="step-grid">
+                    <div class="step-card" onclick="toggleCard(this)">
+                        <h4>extract_analyze_docs</h4>
+                        <p>Analyze each document individually with Gemini 2.5 Pro</p>
+                        <div class="step-details">
+                            <strong>Implementation:</strong> <span class="inline-code">DocumentAnalyzer</span><br>
+                            <strong>Batch Size:</strong> 200 documents<br>
+                            <strong>Processing:</strong> Concurrent via asyncio<br>
+                            <strong>Output Schema:</strong> <span class="inline-code">OneDocSchema</span><br>
+                            <strong>AIData Key:</strong> <span class="inline-code">title_report:doc:{doc_id}:analysis</span><br>
+                            <strong>Strategy:</strong> "When in doubt, include it"
+                        </div>
+                    </div>
+                    <div class="step-card" onclick="toggleCard(this)">
+                        <h4>analyze_tax_history</h4>
+                        <p>Extract tax encumbrances from database</p>
+                        <div class="step-details">
+                            <strong>Implementation:</strong> <span class="inline-code">TaxEncumbranceAnalyzer</span><br>
+                            <strong>Data Source:</strong> Direct database query<br>
+                            <strong>Processing:</strong> Rule-based (no LLM)<br>
+                            <strong>AIData Key:</strong> <span class="inline-code">title_tax_encumbrances</span><br>
+                            <strong>Output:</strong> Tax liens and assessments
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layer-section">
+                <h3>Layer 2: Enrichment & Analysis (8 Parallel Operations)</h3>
+                <p>Semantic understanding, classification, and deterministic satisfaction matching.</p>
+                
+                <div class="step-grid">
+                    <div class="step-card" onclick="toggleCard(this)">
+                        <h4>summarize_docs</h4>
+                        <p>Create human-readable summaries</p>
+                        <div class="step-details">
+                            <strong>Implementation:</strong> <span class="inline-code">DocSummarizer</span><br>
+                            <strong>Input:</strong> Document analyses from Layer 1<br>
+                            <strong>AIData Key:</strong> <span class="inline-code">title_docs_summaries</span>
+                        </div>
+                    </div>
+                    <div class="step-card" onclick="toggleCard(this)">
+                        <h4>summarize_encumbrances</h4>
+                        <p>Summarize all encumbrances</p>
+                        <div class="step-details">
+                            <strong>Implementation:</strong> <span class="inline-code">EncumbranceSummarizer</span><br>
+                            <strong>AIData Key:</strong> <span class="inline-code">encumbrance_summaries</span>
+                        </div>
+                    </div>
+                    <div class="step-card" onclick="toggleCard(this)">
+                        <h4>classify_encumbrances</h4>
+                        <p>Assign types and severity scores</p>
+                        <div class="step-details">
+                            <strong>Implementation:</strong> <span class="inline-code">EncumbranceClassifier</span><br>
+                            <strong>Batch Size:</strong> 50 encumbrances<br>
+                            <strong>Output:</strong> Type, subtype, severity (0-10)<br>
+                            <strong>AIData Key:</strong> <span class="inline-code">encumbrance_classifications</span>
+                        </div>
+                    </div>
+                    <div class="step-card" onclick="toggleCard(this)">
+                        <h4>resolve_satisfactions</h4>
+                        <p>Deterministic satisfaction matching</p>
+                        <div class="step-details">
+                            <strong>Implementation:</strong> <span class="inline-code">SatisfactionResolver</span><br>
+                            <strong>Algorithm:</strong> String matching + temporal validation<br>
+                            <strong>Processing:</strong> Pure deterministic (no LLM)<br>
+                            <strong>AIData Key:</strong> <span class="inline-code">title_encumbrance_releases</span>
+                        </div>
+                    </div>
+                    <div class="step-card" onclick="toggleCard(this)">
+                        <h4>chain_of_title</h4>
+                        <p>Trace ownership transfers</p>
+                        <div class="step-details">
+                            <strong>Implementation:</strong> <span class="inline-code">ChainOfTitleAnalyzer</span><br>
+                            <strong>Analysis:</strong> Ownership timeline and gaps<br>
+                            <strong>AIData Key:</strong> <span class="inline-code">chain_of_title</span>
+                        </div>
+                    </div>
+                    <div class="step-card" onclick="toggleCard(this)">
+                        <h4>encumbrance_status</h4>
+                        <p>Filter for relevance (Pass 3)</p>
+                        <div class="step-details">
+                            <strong>Implementation:</strong> <span class="inline-code">EncumbranceStatusAnalyzer</span><br>
+                            <strong>Uses:</strong> Satisfaction resolution map<br>
+                            <strong>Constraints:</strong> Must respect deterministic matches<br>
+                            <strong>AIData Key:</strong> <span class="inline-code">encumbrance_status_analysis</span>
+                        </div>
+                    </div>
+                    <div class="step-card" onclick="toggleCard(this)">
+                        <h4>assess_confidence</h4>
+                        <p>Overall confidence scoring</p>
+                        <div class="step-details">
+                            <strong>Implementation:</strong> <span class="inline-code">AssessTitleDocsConfidence</span><br>
+                            <strong>AIData Key:</strong> <span class="inline-code">title_docs_confidence_assessment</span>
+                        </div>
+                    </div>
+                    <div class="step-card" onclick="toggleCard(this)">
+                        <h4>generate_overall_summary</h4>
+                        <p>Executive summary generation</p>
+                        <div class="step-details">
+                            <strong>Implementation:</strong> <span class="inline-code">GenerateOverallSummary</span><br>
+                            <strong>AIData Key:</strong> <span class="inline-code">title_report_confidence_summary</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layer-section">
+                <h3>Layer 3: Aggregation</h3>
+                <p>Combine tax and document encumbrances with deduplication.</p>
+                
+                <div class="step-grid">
+                    <div class="step-card" onclick="toggleCard(this)">
+                        <h4>aggregate_tax_title</h4>
+                        <p>Merge and deduplicate all encumbrances</p>
+                        <div class="step-details">
+                            <strong>Implementation:</strong> <span class="inline-code">AggregateTitleEncumbrances</span><br>
+                            <strong>Sources:</strong> Tax + document encumbrances<br>
+                            <strong>AIData Key:</strong> <span class="inline-code">aggregated_title_encumbrances</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layer-section">
+                <h3>Layer 5: Report Data Collection</h3>
+                <p>Aggregate all AIData instances and upload master JSON.</p>
+                
+                <div class="step-grid">
+                    <div class="step-card" onclick="toggleCard(this)">
+                        <h4>aggregate_report_data</h4>
+                        <p>Collect all analysis data and upload to GCS</p>
+                        <div class="step-details">
+                            <strong>Implementation:</strong> <span class="inline-code">AggregateReportData</span><br>
+                            <strong>Collection:</strong> All AIData instances for order<br>
+                            <strong>Upload:</strong> Google Cloud Storage<br>
+                            <strong>AIData Key:</strong> <span class="inline-code">title_report:master:json</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layer-section">
+                <h3>Layer 6: Final Report Generation</h3>
+                <p>Generate PDF reports from master JSON.</p>
+                
+                <div class="step-grid">
+                    <div class="step-card" onclick="toggleCard(this)">
+                        <h4>generate_report</h4>
+                        <p>Create ALTA PDF commitment</p>
+                        <div class="step-details">
+                            <strong>Implementation:</strong> <span class="inline-code">GenerateReport</span><br>
+                            <strong>Template Engine:</strong> Jinja2<br>
+                            <strong>PDF Generator:</strong> WeasyPrint<br>
+                            <strong>AIData Key:</strong> <span class="inline-code">title_report:master:pdf</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3.0 Three-Pass Strategy -->
+        <div id="passes" class="section">
+            <h2>3.0 Three-Pass Analysis Strategy</h2>
+            
+            <div class="alert alert-info">
+                <strong>Core Insight:</strong> The system requires three passes due to critical dependencies: satisfactions depend on encumbrances, classification depends on context, and relevance depends on satisfactions.
+            </div>
+
+            <h3>3.1 Pass 1: Exhaustive Extraction (Layer 1)</h3>
+            
+            <p><strong>Objective:</strong> Extract EVERY potential encumbrance from EVERY document, erring on the side of inclusion.</p>
+            
+            <h4>Key Characteristics</h4>
+            <ul>
+                <li><strong>Maximally inclusive:</strong> "If in doubt, include it"</li>
+                <li><strong>No filtering:</strong> Even if a document releases something in the same text, both are captured</li>
+                <li><strong>Document-level isolation:</strong> Each document analyzed independently</li>
+                <li><strong>Concurrent execution:</strong> Up to 200 documents processed in parallel batches</li>
+            </ul>
+
+            <h4>Prompt Strategy</h4>
+            <div class="code-block">
+"You are an expert U.S. title officer AI. Your job is to read **one** title-related document..."
+"This is a **first-pass** extraction: capture every potential encumbrance;
+never suppress or delete items even if the same document purports to release them."</div>
+
+            <h4>Example Processing</h4>
+            <div class="code-block">
+Document: "Subject to Deed of Trust recorded as Entry 93689:2019 for $291,000. 
+          Said Deed of Trust is hereby reconveyed."
+
+Output:
+  potential_requirements: [
+    {trigger: "Deed of Trust", instrument_ref: "93689:2019", amount: 291000, ...}
+  ]
+  satisfactions: [
+    {trigger: "Reconveyance", releases_instrument_ref: "93689:2019", ...}
+  ]
+
+Note: Both requirement AND satisfaction captured, not merged!</div>
+
+            <h3>3.2 Pass 2: Classification & Matching (Layer 2)</h3>
+            
+            <p><strong>Objective:</strong> Add semantic understanding, match satisfactions to encumbrances, assess data quality.</p>
+
+            <h4>Classification Process (LLM)</h4>
+            <ul>
+                <li>Assign <span class="inline-code">encumbrance_type</span> and <span class="inline-code">encumbrance_subtype</span></li>
+                <li>Calculate <span class="inline-code">severity_score</span> (0-10 scale)</li>
+                <li>Apply type-specific floors (e.g., IRS liens ≥ 8)</li>
+                <li>Temporal adjustments (items > 20 years: -2 severity)</li>
+            </ul>
+
+            <h4>Satisfaction Matching (Deterministic)</h4>
+            <div class="code-block">
+def _instrument_refs_match(self, ref1, ref2):
+    """Deterministic matching using instrument references"""
+    # Normalize: "Book 3285, Page 383" → "3285:383"
+    # Normalize: "Entry No. 93689:2019" → "93689:2019"
+    norm1 = normalize(ref1)
+    norm2 = normalize(ref2)
+    return norm1 == norm2 or norm1 in norm2 or norm2 in norm1
+
+# Temporal validation: satisfaction_date must be > encumbrance_date
+if sat_date < enc_date:
+    mark_as_temporal_failure()
+else:
+    mark_as_released()</div>
+
+            <h3>3.3 Pass 3: Relevance Filtering (Encumbrance Status)</h3>
+            
+            <p><strong>Objective:</strong> Determine which encumbrances are actually relevant to the title report.</p>
+
+            <div class="alert alert-warning">
+                <strong>Critical Constraint:</strong> The LLM MUST respect the deterministic satisfaction resolution map and cannot override high-confidence matches.
+            </div>
+
+            <h4>Relevance Criteria</h4>
+            <p>An encumbrance is relevant only if ALL of the following are true:</p>
+            <ol>
+                <li>It is NOT fully released, satisfied, or cured in a later document</li>
+                <li>It is NOT a duplicate or near-duplicate of another retained item</li>
+                <li>It clearly relates to the subject property (matching parcel ID, plat, or legal description)</li>
+                <li>It contains legal obligations or property rights that would impact the title</li>
+            </ol>
+
+            <h4>LLM Filtering Value-Add</h4>
+            <ul>
+                <li><strong>Deduplication:</strong> Recognizes "same lien described differently"</li>
+                <li><strong>Property matching:</strong> Interprets legal descriptions</li>
+                <li><strong>Grouping:</strong> Collapses related items (e.g., partial releases)</li>
+                <li><strong>Semantic understanding:</strong> Identifies neighboring parcel easements</li>
+            </ul>
+        </div>
+
+        <!-- 4.0 Data Flow -->
+        <div id="dataflow" class="section">
+            <h2>4.0 Data Flow & State Management</h2>
+
+            <h3>4.1 AIData Storage Schema</h3>
+            <div class="code-block">
+CREATE TABLE ai_data (
+    id UUID PRIMARY KEY,
+    org_id UUID NOT NULL,
+    order_id UUID NOT NULL,
+    key VARCHAR NOT NULL,
+    value JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(org_id, order_id, key)
+);</div>
+
+            <h3>4.2 Key Patterns by Layer</h3>
+            
+            <div class="key-pattern">Layer 1: title_report:doc:{doc_id}:analysis</div>
+            <div class="key-pattern">Layer 1: title_tax_encumbrances</div>
+            <div class="key-pattern">Layer 2: title_docs_summaries</div>
+            <div class="key-pattern">Layer 2: encumbrance_summaries</div>
+            <div class="key-pattern">Layer 2: encumbrance_classifications</div>
+            <div class="key-pattern">Layer 2: title_encumbrance_releases</div>
+            <div class="key-pattern">Layer 2: chain_of_title</div>
+            <div class="key-pattern">Layer 2: encumbrance_status_analysis</div>
+            <div class="key-pattern">Layer 2: title_docs_confidence_assessment</div>
+            <div class="key-pattern">Layer 2: title_report_confidence_summary</div>
+            <div class="key-pattern">Layer 3: aggregated_title_encumbrances</div>
+            <div class="key-pattern">Layer 5: title_report:master:json</div>
+            <div class="key-pattern">Layer 6: title_report:master:pdf</div>
+            <div class="key-pattern">Metadata: agents:title_analyst:status</div>
+            <div class="key-pattern">Metadata: agents:title_analyst:state</div>
+
+            <h3>4.3 State Merge Strategies</h3>
+            <p>For parallel execution safety, the system uses annotated merge strategies:</p>
+
+            <div class="code-block">
+# Last write wins for workflow status
+status: Annotated[str, (lambda a, b: b if b != "IN_PROGRESS" else a)]
+
+# Dictionary merge for step-level tracking
+step_status: Annotated[Dict[str, str], (lambda a, b: {**(a or {}), **(b or {})})]
+
+# Deep merge for master report metadata
+master_report: Annotated[Dict[str, Any], (lambda a, b: {**(a or {}), **(b or {})})]</div>
+
+            <h3>4.4 Idempotency & Resumability</h3>
+            <div class="code-block">
+async def analyze_and_save_document(self, doc, org_id, order_id):
+    # Check if analysis already exists
+    ai_data = await get_ai_data_instance(
+        org_id, order_id, 
+        generate_doc_analysis_key(doc['id'])
+    )
+    
+    if ai_data is not None:
+        logger.info(f"Skipping doc {doc['id']} - already processed")
+        return {"doc_id": doc['id'], "status": "skipped"}
+    
+    # Proceed with analysis...</div>
+        </div>
+
+        <!-- 5.0 Step Reference -->
+        <div id="steps" class="section">
+            <h2>5.0 Complete Step Reference</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Step</th>
+                        <th>Layer</th>
+                        <th>Implementation</th>
+                        <th>Processing</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="inline-code">extract_analyze_docs</span></td>
+                        <td>1</td>
+                        <td>DocumentAnalyzer</td>
+                        <td>LLM (Gemini 2.5 Pro)</td>
+                        <td>Potential encumbrances + satisfactions</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">analyze_tax_history</span></td>
+                        <td>1</td>
+                        <td>TaxEncumbranceAnalyzer</td>
+                        <td>Rule-based (no LLM)</td>
+                        <td>Tax liens and assessments</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">summarize_docs</span></td>
+                        <td>2</td>
+                        <td>DocSummarizer</td>
+                        <td>LLM</td>
+                        <td>Document summaries</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">summarize_encumbrances</span></td>
+                        <td>2</td>
+                        <td>EncumbranceSummarizer</td>
+                        <td>LLM</td>
+                        <td>Encumbrance narratives</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">classify_encumbrances</span></td>
+                        <td>2</td>
+                        <td>EncumbranceClassifier</td>
+                        <td>LLM (batch 50)</td>
+                        <td>Types, subtypes, severity scores</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">resolve_satisfactions</span></td>
+                        <td>2</td>
+                        <td>SatisfactionResolver</td>
+                        <td>Deterministic matching</td>
+                        <td>Release evidence map</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">chain_of_title</span></td>
+                        <td>2</td>
+                        <td>ChainOfTitleAnalyzer</td>
+                        <td>Ownership tracing</td>
+                        <td>Chain completeness score</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">encumbrance_status</span></td>
+                        <td>2</td>
+                        <td>EncumbranceStatusAnalyzer</td>
+                        <td>LLM with constraints</td>
+                        <td>Filtered requirements/exceptions</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">assess_title_docs_confidence</span></td>
+                        <td>2</td>
+                        <td>AssessTitleDocsConfidence</td>
+                        <td>Confidence analysis</td>
+                        <td>Confidence assessment</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">generate_overall_summary</span></td>
+                        <td>2</td>
+                        <td>GenerateOverallSummary</td>
+                        <td>Summary generation</td>
+                        <td>Executive summary</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">aggregate_tax_title</span></td>
+                        <td>3</td>
+                        <td>AggregateTitleEncumbrances</td>
+                        <td>Deduplication</td>
+                        <td>Consolidated encumbrances</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">aggregate_report_data</span></td>
+                        <td>5</td>
+                        <td>AggregateReportData</td>
+                        <td>JSON aggregation</td>
+                        <td>Master JSON in GCS</td>
+                    </tr>
+                    <tr>
+                        <td><span class="inline-code">generate_report</span></td>
+                        <td>6</td>
+                        <td>GenerateReport</td>
+                        <td>PDF generation</td>
+                        <td>ALTA commitment PDF</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>5.1 Provenance Requirements</h3>
+            <p>Every encumbrance MUST include traceability information:</p>
+            
+            <div class="schema-def">
+                <div class="schema-field">
+                    <span class="field-name">instrument_ref</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">Entry number or Book/Page from the document</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">recording_date</span>
+                    <span class="field-type">date</span>
+                    <div class="field-desc">Date when instrument was recorded</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">source_snippet</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">Direct verbatim quote containing key legal language</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">source_pages</span>
+                    <span class="field-type">array</span>
+                    <div class="field-desc">Page numbers where evidence appears</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">releases_instrument_ref</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">For satisfactions - specific Entry No. being released</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6.0 Satisfaction Algorithm -->
+        <div id="satisfaction" class="section">
+            <h2>6.0 Deterministic Satisfaction Matching Algorithm</h2>
+
+            <div class="alert alert-success">
+                <strong>Key Innovation:</strong> Satisfaction matching is purely deterministic to prevent LLM hallucination in critical release decisions.
+            </div>
+
+            <h3>6.1 Complete Algorithm</h3>
+            <div class="code-block">
+class SatisfactionResolver:
+    def _normalize_instrument_ref(self, ref):
+        """Normalize to handle format variations"""
+        if not ref:
+            return None
+        
+        ref = ref.strip().replace("Entry No. ", "").replace("Instrument No. ", "")
+        
+        # "Book 3285, Page 383" → "3285:383"
+        if "Book" in ref and "Page" in ref:
+            book = extract_book_number(ref)
+            page = extract_page_number(ref)
+            return f"{book}:{page}"
+        
+        # "78094 in Book 3285" → "78094"
+        if " in Book" in ref:
+            return ref.split(" in Book")[0].strip()
+        
+        return ref
+    
+    def _instrument_refs_match(self, ref1, ref2):
+        """Check if two instrument references match"""
+        norm1 = self._normalize_instrument_ref(ref1)
+        norm2 = self._normalize_instrument_ref(ref2)
+        
+        # Direct match or partial match (substring)
+        return (norm1 == norm2) or (norm1 in norm2) or (norm2 in norm1)
+    
+    async def resolve_satisfactions(self, org_id, order_id):
+        # Get all satisfactions and encumbrances from AIData
+        all_satisfactions = extract_all_satisfactions_from_docs()
+        all_encumbrances = extract_all_encumbrances_from_docs()
+        
+        released_encumbrances = []
+        temporal_failures = []
+        
+        for satisfaction in all_satisfactions:
+            releases_ref = satisfaction['releases_instrument_ref']
+            sat_date = parse_date(satisfaction['recording_date'])
+            
+            for encumbrance in all_encumbrances:
+                enc_ref = encumbrance['instrument_ref']
+                enc_date = parse_date(encumbrance['recording_date'])
+                
+                if not self._instrument_refs_match(releases_ref, enc_ref):
+                    continue  # No match
+                
+                # Temporal validation: satisfaction must be recorded AFTER encumbrance
+                if sat_date and enc_date and sat_date < enc_date:
+                    temporal_failures.append({
+                        "satisfaction_id": satisfaction['id'],
+                        "encumbrance_id": encumbrance['id'],
+                        "reason": f"Satisfaction {sat_date} before encumbrance {enc_date}"
+                    })
+                    continue  # Invalid match
+                
+                # Valid match found
+                match_confidence = "high" if releases_ref == enc_ref else "medium"
+                released_encumbrances.append({
+                    "encumbrance_id": encumbrance['id'],
+                    "satisfaction_id": satisfaction['id'],
+                    "releases_instrument_ref": releases_ref,
+                    "quote": satisfaction['source_snippet'][:500],
+                    "recording_date": satisfaction['recording_date'],
+                    "match_confidence": match_confidence
+                })
+        
+        # Save deterministic resolution map to AIData
+        await save_ai_data(org_id, order_id, SATISFACTION_RESOLUTION_MAP_KEY, {
+            "released_encumbrances": released_encumbrances,
+            "unmatched_satisfactions": [s['id'] for s in all_satisfactions if not matched],
+            "temporal_failures": temporal_failures
+        })</div>
+
+            <h3>6.2 Matching Process Steps</h3>
+            
+            <h4>Step 1: Normalize References</h4>
+            <ul>
+                <li>"Book 3285, Page 383" → "3285:383"</li>
+                <li>"Entry No. 93689:2019" → "93689:2019"</li>
+                <li>"78094 in Book 3285" → "78094"</li>
+            </ul>
+
+            <h4>Step 2: Check for Match</h4>
+            <ul>
+                <li>Exact match → <span class="inline-code">confidence: "high"</span></li>
+                <li>Substring match → <span class="inline-code">confidence: "medium"</span></li>
+                <li>No match → continue to next encumbrance</li>
+            </ul>
+
+            <h4>Step 3: Temporal Validation</h4>
+            <ul>
+                <li>Valid (sat_date > enc_date) → create release mapping</li>
+                <li>Invalid → add to <span class="inline-code">temporal_failures</span></li>
+                <li>Missing dates → proceed with caution flag</li>
+            </ul>
+
+            <h4>Step 4: Output Generation</h4>
+            <div class="code-block">
+{
+  "released_encumbrances": [
+    {
+      "encumbrance_id": "uuid",
+      "satisfaction_id": "uuid",
+      "releases_instrument_ref": "93689:2019",
+      "match_confidence": "high|medium"
+    }
+  ],
+  "unmatched_satisfactions": ["uuid1", "uuid2"],
+  "temporal_failures": [...]
+}</div>
+        </div>
+
+        <!-- 7.0 Decision Points -->
+        <div id="decisions" class="section">
+            <h2>7.0 Critical Decision Points</h2>
+
+            <div class="decision-point">
+                <h4>Decision 1: Document Analysis Batch Size</h4>
+                <p><strong>Location:</strong> <span class="inline-code">DocumentAnalyzer.__init__(batch_size=200)</span></p>
+                <p><strong>Current Setting:</strong> 200 documents per batch</p>
+                <p><strong>Trade-off:</strong> Larger batches = faster processing but higher concurrent LLM cost</p>
+                <p><strong>Impact:</strong> With 500 documents, processes in 3 batches (200 + 200 + 100)</p>
+                
+                <div class="improvement-item">
+                    <h4>Optimization Opportunity</h4>
+                    <ul>
+                        <li>Implement adaptive batch sizing based on document complexity</li>
+                        <li>Monitor LLM rate limits and adjust dynamically</li>
+                        <li>Expected improvement: 20-30% faster processing</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="decision-point">
+                <h4>Decision 2: Encumbrance Classification Batch Size</h4>
+                <p><strong>Location:</strong> <span class="inline-code">EncumbranceClassifier.BATCH_SIZE = 50</span></p>
+                <p><strong>Current Setting:</strong> 50 encumbrances per batch</p>
+                <p><strong>Trade-off:</strong> Larger batches risk token limits, smaller batches increase API calls</p>
+                <p><strong>Impact:</strong> With 300 encumbrances, processes in 6 batches</p>
+                
+                <div class="improvement-item">
+                    <h4>Optimization Opportunity</h4>
+                    <ul>
+                        <li>Token-based batching instead of fixed count</li>
+                        <li>Category-aware batching for efficiency</li>
+                        <li>Expected improvement: 40% fewer LLM calls</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="decision-point">
+                <h4>Decision 3: Satisfaction Matching Strictness</h4>
+                <p><strong>Current Logic:</strong></p>
+                <div class="code-block">return (norm1 == norm2) or (norm1 in norm2) or (norm2 in norm1)</div>
+                <p><strong>Trade-off:</strong> Strict matching reduces false positives but increases unmatched satisfactions</p>
+                <p><strong>Example:</strong> "93689" matches "Entry No. 93689:2019" (substring match)</p>
+                
+                <div class="improvement-item">
+                    <h4>Optimization Opportunity</h4>
+                    <ul>
+                        <li>Implement confidence-based matching levels</li>
+                        <li>Train ML model for match probability</li>
+                        <li>Expected improvement: 15% fewer false positives</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="decision-point">
+                <h4>Decision 4: LLM Filtering Discretion</h4>
+                <p><strong>Current Approach:</strong> LLM makes filtering decisions but MUST respect satisfaction map</p>
+                <p><strong>Constraint:</strong></p>
+                <div class="code-block">"**Do NOT mark as released** if:
+   - Encumbrance ID is NOT in released_encumbrances list
+   - Satisfaction is in unmatched_satisfactions"</div>
+                
+                <div class="improvement-item">
+                    <h4>Optimization Opportunity</h4>
+                    <ul>
+                        <li>Two-pass filtering with validation</li>
+                        <li>Audit flagging for low-confidence exclusions</li>
+                        <li>Expected improvement: 25% reduction in errors</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="decision-point">
+                <h4>Decision 5: Severity Score Calculation</h4>
+                <p><strong>Current Approach:</strong> LLM assigns severity with rubric constraints</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Score</th>
+                            <th>Category</th>
+                            <th>Examples</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0-2</td>
+                            <td>Trivial</td>
+                            <td>Administrative, informational</td>
+                        </tr>
+                        <tr>
+                            <td>3-4</td>
+                            <td>Low</td>
+                            <td>Utility easements, old liens (>20y)</td>
+                        </tr>
+                        <tr>
+                            <td>5-6</td>
+                            <td>Medium</td>
+                            <td>Building restrictions, liens $10K-$100K</td>
+                        </tr>
+                        <tr>
+                            <td>7-8</td>
+                            <td>High</td>
+                            <td>Large liens >$100K, major easements</td>
+                        </tr>
+                        <tr>
+                            <td>9-10</td>
+                            <td>Critical</td>
+                            <td>Active foreclosure, IRS liens</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><strong>Type-Specific Floors:</strong></p>
+                <ul>
+                    <li>Active deed of trust: ≥ 5</li>
+                    <li>Unpaid tax liens: ≥ 6</li>
+                    <li>Mechanic's liens: ≥ 7</li>
+                    <li>IRS liens: ≥ 8</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 8.0 Bottlenecks -->
+        <div id="bottlenecks" class="section">
+            <h2>8.0 Performance Bottlenecks</h2>
+
+            <h3>8.1 Bottleneck Analysis</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bottleneck</th>
+                        <th>Current Impact</th>
+                        <th>Root Cause</th>
+                        <th>Proposed Solution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Sequential LLM Calls</strong></td>
+                        <td>500 calls, ~25 minutes</td>
+                        <td>One document per LLM call</td>
+                        <td>Multi-document prompts (5-10 per call)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Large Context Window</strong></td>
+                        <td>100K+ tokens per analysis</td>
+                        <td>Full document text in filtering</td>
+                        <td>Two-stage filtering (deterministic first)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>No Caching</strong></td>
+                        <td>Redundant processing</td>
+                        <td>Every run starts from scratch</td>
+                        <td>Content-based caching by hash</td>
+                    </tr>
+                    <tr>
+                        <td><strong>No Feedback Loop</strong></td>
+                        <td>Errors repeat</td>
+                        <td>No learning from benchmarks</td>
+                        <td>Benchmark-driven prompt tuning</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fixed Batch Sizes</strong></td>
+                        <td>Inefficient resource use</td>
+                        <td>Static configuration</td>
+                        <td>Adaptive batching based on load</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>8.2 Detailed Bottleneck: LLM-Based Filtering</h3>
+            
+            <p><strong>Current Behavior:</strong></p>
+            <ul>
+                <li>Encumbrance status analysis receives all document analyses</li>
+                <li>Plus all classifications and satisfaction map</li>
+                <li>Plus property record metadata</li>
+                <li>Single LLM call with full context</li>
+            </ul>
+
+            <p><strong>Impact:</strong></p>
+            <ul>
+                <li>With 500 documents + 300 encumbrances: ~100K+ tokens</li>
+                <li>Processing time: ~10 seconds per call</li>
+                <li>Risk of exceeding token limits</li>
+                <li>Difficult to debug errors</li>
+            </ul>
+
+            <p><strong>Proposed Solution:</strong></p>
+            <div class="code-block">
+# Stage 1: Deterministic filtering
+released = filter_by_satisfaction_map(encumbrances, resolution_map)
+duplicates = filter_duplicates_by_ref(released)
+out_of_parcel = filter_by_gis_bounds(duplicates, property_bounds)
+
+# Stage 2: LLM for ambiguous cases only
+ambiguous = get_ambiguous_items(out_of_parcel)
+llm_filtered = llm_filter_ambiguous(ambiguous)
+
+# Combine results
+final_encumbrances = deterministic_results + llm_filtered</div>
+        </div>
+
+        <!-- 9.0 Improvements -->
+        <div id="improvements" class="section">
+            <h2>9.0 AI-First Improvement Roadmap</h2>
+
+            <div class="alert alert-info">
+                <strong>Philosophy:</strong> Maximize AI capabilities and prepare for next-generation models (Gemini 3.0) rather than reducing AI usage. Every improvement should enhance AI performance, not replace it.
+            </div>
+
+            <div class="improvement-item">
+                <h4>Priority 1: Multi-Model Orchestration
+                    <span class="priority-tag priority-high">High Impact</span>
+                    <span class="impact-badge">40-50% accuracy gain</span>
+                </h4>
+                <p><strong>Current State:</strong> Single model (Gemini 2.5 Pro) for all tasks</p>
+                <p><strong>Proposed Implementation:</strong></p>
+                <ol>
+                    <li>Deploy specialized models per task:
+                        <ul>
+                            <li><strong>Gemini 2.5 Pro:</strong> Complex document analysis and reasoning</li>
+                            <li><strong>Gemini Flash:</strong> High-volume classification tasks</li>
+                            <li><strong>Future Gemini 3.0:</strong> Critical filtering and satisfaction matching</li>
+                        </ul>
+                    </li>
+                    <li>Ensemble voting for critical decisions:
+                        <ul>
+                            <li>Run 3 parallel analyses with different temperatures</li>
+                            <li>Consensus mechanism for high-confidence results</li>
+                            <li>Flag disagreements for deeper analysis</li>
+                        </ul>
+                    </li>
+                </ol>
+                <p><strong>Expected Impact:</strong> Leverage each model's strengths, ready for Gemini 3.0 integration</p>
+            </div>
+
+            <div class="improvement-item">
+                <h4>Priority 2: Enhanced Context Windows & Multi-Document Processing
+                    <span class="priority-tag priority-high">High Impact</span>
+                    <span class="impact-badge">60% faster processing</span>
+                </h4>
+                <p><strong>Current State:</strong> One document per LLM call, limited context</p>
+                <p><strong>Proposed Implementation:</strong></p>
+                <div class="code-block">
+async def enhanced_batch_analysis(documents):
+    # Leverage larger context windows in newer models
+    # Process 5-10 documents simultaneously with cross-references
+    
+    prompt = """
+    Analyze these {len(documents)} related title documents together.
+    Identify cross-document patterns, shared encumbrances, and 
+    satisfaction chains that span multiple documents.
+    
+    Use the collective context to improve accuracy on:
+    - Partial releases across documents
+    - Chain of title continuity
+    - Hidden relationships between encumbrances
+    """
+    
+    # Single call with massive context
+    result = await gemini_3_0.analyze(
+        documents=documents,
+        cross_reference=True,
+        max_tokens=150000  # Leverage expanded context
+    )
+    
+    return result</div>
+                <p><strong>Expected Impact:</strong> Better understanding through holistic analysis</p>
+            </div>
+
+            <div class="improvement-item">
+                <h4>Priority 3: AI-Driven Prompt Evolution
+                    <span class="priority-tag priority-medium">Medium Impact</span>
+                    <span class="impact-badge">20-30% accuracy gain</span>
+                </h4>
+                <p><strong>Current State:</strong> Static, human-written prompts</p>
+                <p><strong>Proposed Implementation:</strong></p>
+                <ol>
+                    <li><strong>Meta-Learning System:</strong>
+                        <ul>
+                            <li>AI generates prompt variations based on error patterns</li>
+                            <li>Test prompts on benchmark data</li>
+                            <li>Evolutionary algorithm to breed better prompts</li>
+                        </ul>
+                    </li>
+                    <li><strong>Few-Shot Learning Enhancement:</strong>
+                        <ul>
+                            <li>Dynamically inject successful examples into prompts</li>
+                            <li>Build example library from high-confidence outputs</li>
+                            <li>Tailor examples to document type</li>
+                        </ul>
+                    </li>
+                </ol>
+                <div class="code-block">
+# AI generates its own prompt improvements
+meta_prompt = """
+Given these error patterns from our benchmarks:
+{error_patterns}
+
+Generate an improved prompt that specifically addresses these issues.
+Focus on clarity, specificity, and error prevention.
+"""
+
+improved_prompt = await gemini.generate_prompt(meta_prompt)</div>
+                <p><strong>Expected Impact:</strong> Continuous improvement without manual intervention</p>
+            </div>
+
+            <div class="improvement-item">
+                <h4>Priority 4: Intelligent Caching with AI Invalidation
+                    <span class="priority-tag priority-medium">Medium Impact</span>
+                    <span class="impact-badge">40% cost reduction</span>
+                </h4>
+                <p><strong>Current State:</strong> No caching, redundant processing</p>
+                <p><strong>Proposed Implementation:</strong></p>
+                <ul>
+                    <li><strong>Smart Cache Layer:</strong> AI determines cache validity</li>
+                    <li><strong>Semantic Hashing:</strong> AI generates content-aware cache keys</li>
+                    <li><strong>Predictive Prefetching:</strong> AI anticipates needed analyses</li>
+                </ul>
+                <div class="code-block">
+# AI determines if cached result is still valid
+cache_validator = """
+Document: {new_doc}
+Cached Analysis: {cached_result}
+Changes: {diff}
+
+Should we use the cached analysis or reprocess?
+Consider: legal changes, date relevance, material differences
+"""
+
+use_cache = await gemini.evaluate_cache(cache_validator)</div>
+                <p><strong>Expected Impact:</strong> Reduce redundant LLM calls while maintaining accuracy</p>
+            </div>
+
+            <div class="improvement-item">
+                <h4>Priority 5: Reinforcement Learning from Human Feedback
+                    <span class="priority-tag priority-low">Long-term Impact</span>
+                    <span class="impact-badge">Continuous improvement</span>
+                </h4>
+                <p><strong>Current State:</strong> No learning from corrections</p>
+                <p><strong>Proposed Implementation:</strong></p>
+                <div class="code-block">
+# Capture human corrections and feed back to model
+async def learn_from_feedback(original_output, human_correction):
+    # Generate training example
+    training_example = {
+        "input": original_document,
+        "model_output": original_output,
+        "correct_output": human_correction,
+        "delta": diff(original_output, human_correction)
+    }
+    
+    # Use for:
+    # 1. Fine-tuning when available
+    # 2. Few-shot examples in prompts
+    # 3. Confidence calibration
+    
+    await store_training_data(training_example)
+    
+    # Immediate application: adjust confidence thresholds
+    if pattern_detected(training_example):
+        update_confidence_thresholds()</div>
+                <p><strong>Expected Impact:</strong> System gets smarter with every correction</p>
+            </div>
+
+            <div class="improvement-item">
+                <h4>Bonus: Preparing for Gemini 3.0
+                    <span class="priority-tag priority-high">Future-Proofing</span>
+                    <span class="impact-badge">2-3x performance boost expected</span>
+                </h4>
+                <p><strong>Anticipated Capabilities:</strong></p>
+                <ul>
+                    <li><strong>Massive Context Windows:</strong> Process entire property histories at once</li>
+                    <li><strong>Better Reasoning:</strong> Native understanding of legal relationships</li>
+                    <li><strong>Multi-Modal:</strong> Direct PDF/image processing without OCR</li>
+                    <li><strong>Tool Use:</strong> Native database queries and GIS integration</li>
+                </ul>
+                <p><strong>Preparation Steps:</strong></p>
+                <ol>
+                    <li>Modularize prompts for easy model swapping</li>
+                    <li>Build comprehensive test suites for model comparison</li>
+                    <li>Create fallback mechanisms for graceful upgrades</li>
+                    <li>Design for 10x larger context windows</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- 10.0 Prompt Strategy -->
+        <div id="prompts" class="section">
+            <h2>10.0 Prompt Engineering Strategy</h2>
+
+            <h3>10.1 Core Principles</h3>
+            <ol>
+                <li><strong>Role Definition:</strong> Every prompt starts with "You are an expert U.S. title officer..."</li>
+                <li><strong>Structured Output:</strong> All prompts enforce Pydantic schema compliance</li>
+                <li><strong>Explicit Constraints:</strong> "MUST", "NEVER", "ONLY" for critical rules</li>
+                <li><strong>Provenance Requirements:</strong> Every finding must have source citation</li>
+                <li><strong>Confidence Scoring:</strong> Rubrics provided for consistent scoring</li>
+            </ol>
+
+            <h3>10.2 Prompt Hierarchy</h3>
+
+            <h4>Level 1: Extraction</h4>
+            <div class="code-block">
+File: alta_title_analyze_document.txt
+
+"This is a **first-pass** extraction: capture every potential encumbrance;
+never suppress or delete items even if the same document purports to release them."
+
+Objective: Maximize recall, minimize false negatives
+Key Enforcement: "When in doubt, include it"</div>
+
+            <h4>Level 2: Classification</h4>
+            <div class="code-block">
+File: alta_title_classify_encumbrances.txt
+
+"You MUST ONLY use encumbrance types and subtypes that are explicitly 
+listed in the schema below. If you cannot find an exact match in the 
+schema, you MUST use 'other' for both type and subtype."
+
+Objective: Add semantic labels without filtering
+Key Enforcement: Schema compliance</div>
+
+            <h4>Level 3: Filtering</h4>
+            <div class="code-block">
+File: alta_title_report_encumbrance_filter.txt
+
+"An encumbrance is **relevant** only if **all of the following are true**:
+1. It is **not** fully released, satisfied, or cured
+2. It is **not** a duplicate
+3. It clearly relates to the **subject property**
+4. It contains legal obligations"
+
+Objective: Determine relevance with strict constraints
+Key Enforcement: Must respect satisfaction_resolution_map</div>
+
+            <h3>10.3 Proposed Enhancement</h3>
+            <div class="alert alert-info">
+                <strong>Validation Loop:</strong> Add self-checking to prompts
+            </div>
+
+            <div class="code-block">
+"# CRITICAL VALIDATION RULES
+
+Before returning your analysis, verify:
+1. Every encumbrance has a non-empty instrument_ref
+2. All severity scores are between 0-10
+3. All confidence scores are between 0.0-1.0
+4. No released encumbrances appear in title_requirements or title_exceptions
+5. Total encumbrances in output equals input count minus satisfactions
+
+If validation fails, retry analysis with corrections."</div>
+        </div>
+
+        <!-- 11.0 Data Schemas -->
+        <div id="schemas" class="section">
+            <h2>11.0 Data Schemas</h2>
+
+            <h3>11.1 OneDocSchema (Pass 1 Output)</h3>
+            <div class="schema-def">
+                <div class="schema-field">
+                    <span class="field-name">potential_requirements</span>
+                    <span class="field-type">List[PotentialRequirement]</span>
+                    <div class="field-desc">Schedule B-I items that must be cleared before policy</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">potential_exceptions</span>
+                    <span class="field-type">List[PotentialException]</span>
+                    <div class="field-desc">Schedule B-II items that will remain on title</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">satisfactions</span>
+                    <span class="field-type">List[Satisfaction]</span>
+                    <div class="field-desc">Releases, reconveyances, and satisfaction documents</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">confidence_score</span>
+                    <span class="field-type">float</span>
+                    <div class="field-desc">Overall confidence in extraction (0.0-1.0)</div>
+                </div>
+            </div>
+
+            <h3>11.2 Encumbrance Fields</h3>
+            <div class="schema-def">
+                <div class="schema-field">
+                    <span class="field-name">id</span>
+                    <span class="field-type">UUID</span>
+                    <div class="field-desc">Unique identifier for tracking</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">stable_id</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">Cross-step tracking: "enc-{doc_id}-{index}"</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">instrument_ref</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">Entry number or Book/Page reference</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">recording_date</span>
+                    <span class="field-type">date</span>
+                    <div class="field-desc">Date of recording</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">encumbrance_type</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">Primary classification (lien, easement, etc.)</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">encumbrance_subtype</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">Secondary classification</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">severity_score</span>
+                    <span class="field-type">integer</span>
+                    <div class="field-desc">Impact severity (0-10 scale)</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">source_snippet</span>
+                    <span class="field-type">string</span>
+                    <div class="field-desc">Verbatim quote from document</div>
+                </div>
+                <div class="schema-field">
+                    <span class="field-name">source_pages</span>
+                    <span class="field-type">List[int]</span>
+                    <div class="field-desc">Page numbers where found</div>
+                </div>
+            </div>
+
+            <h3>11.3 Satisfaction Resolution Map</h3>
+            <div class="code-block">
+{
+  "released_encumbrances": [
+    {
+      "encumbrance_id": "uuid",
+      "satisfaction_id": "uuid",
+      "releases_instrument_ref": "93689:2019",
+      "quote": "First 500 chars of release text...",
+      "recording_date": "2024-01-15",
+      "match_confidence": "high"  // or "medium"
+    }
+  ],
+  "unmatched_satisfactions": [
+    "satisfaction_uuid_1",
+    "satisfaction_uuid_2"
+  ],
+  "temporal_failures": [
+    {
+      "satisfaction_id": "uuid",
+      "encumbrance_id": "uuid",
+      "reason": "Satisfaction 2023-01-01 before encumbrance 2024-01-01"
+    }
+  ]
+}</div>
+        </div>
+
+        <!-- 12.0 Metrics -->
+        <div id="metrics" class="section">
+            <h2>12.0 Performance Metrics</h2>
+
+            <h3>12.1 Current Performance</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Current</th>
+                        <th>Target</th>
+                        <th>Gap</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Overall Accuracy</td>
+                        <td>70%</td>
+                        <td>85%</td>
+                        <td>15%</td>
+                    </tr>
+                    <tr>
+                        <td>False Negatives</td>
+                        <td>45%</td>
+                        <td>10%</td>
+                        <td>35%</td>
+                    </tr>
+                    <tr>
+                        <td>False Positives</td>
+                        <td>25%</td>
+                        <td>5%</td>
+                        <td>20%</td>
+                    </tr>
+                    <tr>
+                        <td>Processing Time (500 docs)</td>
+                        <td>25 min</td>
+                        <td>10 min</td>
+                        <td>15 min</td>
+                    </tr>
+                    <tr>
+                        <td>LLM Calls</td>
+                        <td>500+</td>
+                        <td>200</td>
+                        <td>300+</td>
+                    </tr>
+                    <tr>
+                        <td>Token Usage</td>
+                        <td>2M</td>
+                        <td>800K</td>
+                        <td>1.2M</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>12.2 Error Distribution</h3>
+            <ul>
+                <li><strong>False Negatives (45%):</strong> Missing valid encumbrances</li>
+                <li><strong>Misclassification (30%):</strong> Wrong type/severity assigned</li>
+                <li><strong>False Positives (25%):</strong> Including released items</li>
+            </ul>
+
+            <h3>12.3 Expected Improvements</h3>
+            <p>With all 5 priority improvements implemented:</p>
+            <ul>
+                <li><strong>Accuracy:</strong> 70% → 85-90%</li>
+                <li><strong>Processing Time:</strong> 25 min → 8-10 min</li>
+                <li><strong>LLM Calls:</strong> 500+ → 150-200</li>
+                <li><strong>Cost Reduction:</strong> 60-70%</li>
+                <li><strong>Error Rate:</strong> 30% → 10-15%</li>
+            </ul>
+
+            <h3>12.4 Success Criteria</h3>
+            <div class="alert alert-success">
+                <strong>Target:</strong> Achieve 50% improvement in accuracy and performance within 3 months through systematic implementation of the improvement roadmap.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update navigation
+            const buttons = document.querySelectorAll('.nav-item');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function toggleCard(card) {
+            card.classList.toggle('expanded');
+        }
+    </script>
+</body>
+</html>
