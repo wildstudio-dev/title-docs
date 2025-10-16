@@ -37,6 +37,8 @@ jobs:
         run: |
           # Copy index.html to docs folder so it serves as the homepage
           cp index.html docs/
+          # Copy assets folder to docs so CSS and JS are accessible
+          cp -r assets docs/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
