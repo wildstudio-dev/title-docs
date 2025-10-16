@@ -57,14 +57,6 @@
                 <p><strong>Trade-off:</strong> Larger batches = faster processing but higher concurrent LLM cost</p>
                 <p><strong>Impact:</strong> With 500 documents, processes in 3 batches (200 + 200 + 100)</p>
                 
-                <div class="improvement-item">
-                    <h4>Optimization Opportunity</h4>
-                    <ul>
-                        <li>Implement adaptive batch sizing based on document complexity</li>
-                        <li>Monitor LLM rate limits and adjust dynamically</li>
-                        <li>Expected improvement: 20-30% faster processing</li>
-                    </ul>
-                </div>
             </div>
 
             <div class="decision-point">
@@ -74,14 +66,6 @@
                 <p><strong>Trade-off:</strong> Larger batches risk token limits, smaller batches increase API calls</p>
                 <p><strong>Impact:</strong> With 300 encumbrances, processes in 6 batches</p>
                 
-                <div class="improvement-item">
-                    <h4>Optimization Opportunity</h4>
-                    <ul>
-                        <li>Token-based batching instead of fixed count</li>
-                        <li>Category-aware batching for efficiency</li>
-                        <li>Expected improvement: 40% fewer LLM calls</li>
-                    </ul>
-                </div>
             </div>
 
             <div class="decision-point">
@@ -91,14 +75,6 @@
                 <p><strong>Trade-off:</strong> Strict matching reduces false positives but increases unmatched satisfactions</p>
                 <p><strong>Example:</strong> "93689" matches "Entry No. 93689:2019" (substring match)</p>
                 
-                <div class="improvement-item">
-                    <h4>Optimization Opportunity</h4>
-                    <ul>
-                        <li>Implement confidence-based matching levels</li>
-                        <li>Train ML model for match probability</li>
-                        <li>Expected improvement: 15% fewer false positives</li>
-                    </ul>
-                </div>
             </div>
 
             <div class="decision-point">
@@ -109,14 +85,6 @@
    - Encumbrance ID is NOT in released_encumbrances list
    - Satisfaction is in unmatched_satisfactions"</div>
                 
-                <div class="improvement-item">
-                    <h4>Optimization Opportunity</h4>
-                    <ul>
-                        <li>Two-pass filtering with validation</li>
-                        <li>Audit flagging for low-confidence exclusions</li>
-                        <li>Expected improvement: 25% reduction in errors</li>
-                    </ul>
-                </div>
             </div>
 
             <div class="decision-point">
